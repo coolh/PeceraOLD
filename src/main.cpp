@@ -1,6 +1,3 @@
-#include <arduino.h>
-#include <stdio.h>
-
 #include "constants.h"
 #include "lcd.h"
 #include "menu.h"

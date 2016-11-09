@@ -1,6 +1,4 @@
 #include <LiquidCrystal.h>
-#include <stdio.h>
-#include <WString.h>
 
 #include "constants.h"
 #include "lcd.h"

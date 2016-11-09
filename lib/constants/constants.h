@@ -2,7 +2,6 @@
 #define CONSTANTS_H
 
 #include <arduino.h>
-#include <stdio.h>
 
 // Version
 #define VERSION   "0.0.1"

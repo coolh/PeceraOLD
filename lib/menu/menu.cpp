@@ -186,13 +186,13 @@ void menuUpdate() {
 	}
 
 	// Entro al menu de configuración (menu_status de 10 a 19)
-	if (button != BTN_NONE || millis() - last_update == 1000) {
+	if (button != BTN_NONE || millis() - last_update < 1000) {
 		menuMain();
 		last_update = millis();
 	}
 
 	// Seteo estado pulsacion
-	if (button != BTN_NONE) {	
+	if (button != BTN_NONE) {
 		last_push = millis();
 		// Prendo el display
 		if(power_save == TRUE) {

@@ -1,5 +1,4 @@
 #include <LiquidCrystal.h>
-
 #include "constants.h"
 #include "lcd.h"
 

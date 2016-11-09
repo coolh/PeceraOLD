@@ -39,3 +39,4 @@ Temporary Items
 .piolibdeps
 *.pdsbak
 *.yml
+*.workspace

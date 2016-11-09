@@ -3,10 +3,6 @@
 #include "menu.h"
 
 // Variables Globales
-unsigned long last_push 			= 0;
-unsigned long last_update			= 0;
-bool					inactivo 				= TRUE;
-bool					power_save 			= FALSE;
 unsigned char menu_option 		= 0;
 int 					button					= 0;
 
@@ -20,9 +16,6 @@ void menuWelcome() {
 
 
 void menuMain() {
-	// Last update
-	last_update = millis();
-
 	// Manejo del menu
 	if (button == BTN_UP && menu_option % 10 == 0) {
 		if (menu_option > MENU_ESTADO && menu_option <= MENU_CONFIG) {
@@ -163,8 +156,12 @@ void menuInactivo() {
 
 void menuUpdate() {
 	// Variables
+	unsigned long last_push 			= 0;
+	unsigned long last_update			= 0;
+	bool					power_save 			= FALSE;
+
+	// Leo boton
 	button = lcdReadButtons();
-	//unsigned char old_menu_option = menu_option;
 
 	// Delay para evitar repetir teclas
 	if (button != BTN_NONE) {
@@ -173,7 +170,6 @@ void menuUpdate() {
 
 	// Detecto Inactividad
 	if (millis() - last_push >= INAC_TIMEOUT && millis() - last_push <= POWERSAVE_TIMEOUT) {
-		inactivo = TRUE;
 		menu_option = MENU_INACTIVO;
 	}
 
@@ -184,31 +180,25 @@ void menuUpdate() {
 		digitalWrite(BACKLIT, LOW);
 	}
 
-	/*/ Proceso el menu inactivo
-	if (menu_option == MENU_INACTIVO) {
-		if (old_menu_option != MENU_INACTIVO) {
-			menuInactivo();
-		}
-	}*/
-
 	// Entro al menu con select y seteo el default
 	if (button == BTN_SELECT && menu_option == MENU_INACTIVO) {
 		menu_option = MENU_ESTADO;
 	}
 
 	// Entro al menu de configuración (menu_status de 10 a 19)
-	if ((button != BTN_NONE && menu_option != MENU_INACTIVO) || (millis() - last_update == 1000 && power_save != TRUE)) {
+	if (button != BTN_NONE || millis() - last_update == 1000) {
 		menuMain();
+		last_update = millis();
 	}
 
 	// Seteo estado pulsacion
-	if (button != BTN_NONE) {
+	if (button != BTN_NONE) {	
+		last_push = millis();
+		// Prendo el display
 		if(power_save == TRUE) {
 			digitalWrite(BACKLIT, HIGH);
 			lcdOn();
 			power_save = FALSE;
 		}
-		inactivo = FALSE;
-		last_push = millis();
 	}
 }

@@ -5,6 +5,9 @@
 // Variables Globales
 unsigned char menu_option 		= 0;
 int 					button					= 0;
+unsigned long last_push 			= 0;
+unsigned long last_update			= 0;
+bool					power_save 			= FALSE;
 
 // Muestro Bienvenida
 void menuWelcome() {
@@ -156,9 +159,6 @@ void menuInactivo() {
 
 void menuUpdate() {
 	// Variables
-	unsigned long last_push 			= 0;
-	unsigned long last_update			= 0;
-	bool					power_save 			= FALSE;
 
 	// Leo boton
 	button = lcdReadButtons();
@@ -186,7 +186,7 @@ void menuUpdate() {
 	}
 
 	// Entro al menu de configuración (menu_status de 10 a 19)
-	if (button != BTN_NONE || millis() - last_update < 1000) {
+	if (button != BTN_NONE || millis() - last_update > 1000) {
 		menuMain();
 		last_update = millis();
 	}

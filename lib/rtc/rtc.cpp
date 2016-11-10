@@ -14,7 +14,7 @@ void wireInit() {
  * de fecha y hora. Entrega la informacion horaria en las variables globales
  * declaradas al principio del sketch.
  */
-bool rtcWrite(date datevar) {
+void rtcWrite(date datevar) {
   // Iniciar el intercambio de información con el DS1307 (0x68)
   Wire.beginTransmission(0x68);
   // Escribir la dirección del registro segundero
@@ -28,18 +28,13 @@ bool rtcWrite(date datevar) {
   Wire.write(bin2bcd(datevar.day));
   Wire.write(bin2bcd(datevar.month));
   Wire.write(bin2bcd(datevar.year));
-  // Terminamos la escritura y verificamos si el DS1307 respondio
-  // Si la escritura se llevo a cabo el metodo endTransmission retorna 0
-  if (Wire.endTransmission() != 0)
-    return false;
 }
 
 /**
  * Esta funcion establece la cominicación con el DS1307 y lee los registros
- * de fecha y hora. Entrega la informacion horaria en las variables globales
- * declaradas al principio del sketch.
+ * de fecha y hora.
  */
- /*
+
 date rtcRead()
 {
   date datevar;
@@ -63,7 +58,7 @@ date rtcRead()
 
   return datevar;
 }
-*/
+
 /**
  * Convierte un numero binario a BCD
  */

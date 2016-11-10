@@ -23,11 +23,11 @@ unsigned char bin2bcd(unsigned char bin);
 /**
  * Escribo info de hora
  */
-bool rtcWrite(date datevar);
+void rtcWrite(date datevar);
 
 /**
  * Leo La informacion de reloj
  */
-/*date rtcRead();*/
+date rtcRead();
 
 #endif

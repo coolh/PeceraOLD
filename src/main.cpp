@@ -25,6 +25,10 @@ void setup() {
 void loop() {
 	// Proceso Menu
 	menuUpdate();
+
+	// Leo hora
+	date datevar = rtcRead();
+
 	// Pauso
 	//delay(500);
 }

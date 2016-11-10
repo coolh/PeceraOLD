@@ -63,7 +63,7 @@ void menuMain() {
 		break;
 		case MENU_ESTADO: {
 			lcdPrint(0, 0, "     ESTADO     ");
-			lcdPrint(0, 1, "    OPCIONES   >");
+			lcdPrint(0, 1, "  INFORMACION  >");
 		}
 		break;
 		case MENU_ESTADO_LEDS: {
@@ -97,17 +97,13 @@ void menuMain() {
 		}
 		break;
 		case MENU_ESTADO_MICRO: {
-			/*unsigned long uptime = millis();
-			volatile double hours = (double)uptime / 3600000;
-			char buffer[11];
-			String text = dtostrf(hours, 10, 2, buffer);*/
-			char buffer[17];
+			char linea1[17];
 			unsigned long uptime = millis() / 1000;
 			int days = elapsedDays(uptime);
 			int hours = numberOfHours(uptime);
 			int mins = numberOfMinutes(uptime);
-			sprintf(buffer, "UP: %3dd %2dh %2dm", days, hours, mins);
-			lcdPrint(0, 0, buffer);
+			sprintf(linea1, "UP: %3dd %2dh %2dm", days, hours, mins);
+			lcdPrint(0, 0, linea1);
 			lcdPrint(0, 1, "VERSION:   " VERSION);
 		}
 		break;
@@ -157,10 +153,10 @@ void menuMain() {
 void menuInactivo() {
 	// Limpio Pantalla
 	lcdClear();
-
 	// Muestro info basica
 	lcdPrint(0, 0, "WT:28C     18:25");
 	lcdPrint(0, 1, "T:32C    Hr:100%");
+
 }
 
 void menuUpdate() {
@@ -182,7 +178,7 @@ void menuUpdate() {
 	// Apago el display
 	if (millis() - last_push > POWERSAVE_TIMEOUT) {
 		power_save = TRUE;
-		lcdOff();
+		lcdOn(FALSE);
 		digitalWrite(BACKLIT, LOW);
 	}
 
@@ -203,7 +199,7 @@ void menuUpdate() {
 		// Prendo el display
 		if(power_save == TRUE) {
 			digitalWrite(BACKLIT, HIGH);
-			lcdOn();
+			lcdOn(TRUE);
 			power_save = FALSE;
 		}
 	}

@@ -13,13 +13,10 @@ int lcdReadButtons();
 // Clear LCD
 void lcdClear();
 
-// Apago LCD
-void lcdOff();
+// Prendo y apago LCD
+void lcdOn(bool state);
 
-// Prendo LCD
-void lcdOn();
-
-// autoscroll
-void lcdScroll(bool state);
+// Escribo un caracter customizable
+void lcdWriteChar(int x, int y, byte custom_char[8], int mempos);
 
 #endif

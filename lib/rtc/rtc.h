@@ -21,10 +21,13 @@ void wireInit();
 unsigned char bin2bcd(unsigned char bin);
 
 /**
- * Esta funcion establece la cominicación con el DS1307 y lee los registros
- * de fecha y hora. Entrega la informacion horaria en las variables globales
- * declaradas al principio del sketch.
+ * Escribo info de hora
  */
 bool rtcWrite(date datevar);
+
+/**
+ * Leo La informacion de reloj
+ */
+/*date rtcRead();*/
 
 #endif

@@ -1,6 +1,7 @@
 #include "constants.h"
 #include "lcd.h"
 #include "menu.h"
+#include "rtc.h"
 
 // Variables Globales
 unsigned char menu_option 		= 0;

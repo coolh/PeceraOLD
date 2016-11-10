@@ -35,6 +35,36 @@ bool rtcWrite(date datevar) {
 }
 
 /**
+ * Esta funcion establece la cominicación con el DS1307 y lee los registros
+ * de fecha y hora. Entrega la informacion horaria en las variables globales
+ * declaradas al principio del sketch.
+ */
+ /*
+date rtcRead()
+{
+  date datevar;
+  // Iniciar el intercambio de información con el DS1307 (0xD0)
+  Wire.beginTransmission(0x68);
+
+  // Escribir la dirección del segundero
+  Wire.write(0x00);
+
+  // Si el DS1307 esta presente, comenzar la lectura de 8 bytes
+  Wire.requestFrom(0x68, 8);
+
+  // Recibimos el byte del registro 0x00 y lo convertimos a binario
+  datevar.second = bcd2bin(Wire.read());
+  datevar.minute = bcd2bin(Wire.read()); // Continuamos recibiendo cada uno de los registros
+  datevar.hour = bcd2bin(Wire.read());
+  datevar.wday = bcd2bin(Wire.read());
+  datevar.day = bcd2bin(Wire.read());
+  datevar.month = bcd2bin(Wire.read());
+  datevar.year = bcd2bin(Wire.read());
+
+  return datevar;
+}
+*/
+/**
  * Convierte un numero binario a BCD
  */
 unsigned char bin2bcd(unsigned char bin) {

@@ -3,6 +3,9 @@
 #include "menu.h"
 #include "rtc.h"
 
+// variables
+date datevar;
+
 // Setup
 void setup() {
 	// Inicializo LCD
@@ -23,11 +26,13 @@ void setup() {
 
 // Main loop
 void loop() {
+	// Variables
+
 	// Proceso Menu
 	menuUpdate();
 
 	// Leo hora
-	date datevar = rtcRead();
+	datevar = rtcRead();
 
 	// Pauso
 	//delay(500);

@@ -20,14 +20,20 @@ void wireInit();
  */
 unsigned char bin2bcd(unsigned char bin);
 
+
+/**
+ * Convierte un numero BCD a binario
+ */
+unsigned char bcd2bin(unsigned char bcd);
+
 /**
  * Escribo info de hora
  */
-void rtcWrite(date datevar);
+bool rtcWrite(date datevar);
 
 /**
  * Leo La informacion de reloj
  */
-date rtcRead();
+struct date rtcRead();
 
 #endif

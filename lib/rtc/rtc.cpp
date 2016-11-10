@@ -10,11 +10,10 @@ void wireInit() {
 }
 
 /**
- * Esta funcion establece la cominicación con el DS1307 y lee los registros
- * de fecha y hora. Entrega la informacion horaria en las variables globales
- * declaradas al principio del sketch.
+ * Esta funcion establece la cominicación con el DS1307 y escribe los registros
+ * de fecha y hora.
  */
-void rtcWrite(date datevar) {
+bool rtcWrite(date datevar) {
   // Iniciar el intercambio de información con el DS1307 (0x68)
   Wire.beginTransmission(0x68);
   // Escribir la dirección del registro segundero
@@ -28,6 +27,10 @@ void rtcWrite(date datevar) {
   Wire.write(bin2bcd(datevar.day));
   Wire.write(bin2bcd(datevar.month));
   Wire.write(bin2bcd(datevar.year));
+  // Terminamos la escritura y verificamos si el DS1307 respondio
+  // Si la escritura se llevo a cabo el metodo endTransmission retorna 0
+  if (Wire.endTransmission() != 0)
+    return false;
 }
 
 /**
@@ -35,17 +38,22 @@ void rtcWrite(date datevar) {
  * de fecha y hora.
  */
 
-date rtcRead()
+struct date rtcRead()
 {
   date datevar;
+
   // Iniciar el intercambio de información con el DS1307 (0xD0)
   Wire.beginTransmission(0x68);
 
   // Escribir la dirección del segundero
   Wire.write(0x00);
 
+  // Terminamos la escritura y verificamos si el DS1307 respondio
+  // Si la escritura se llevo a cabo el metodo endTransmission retorna 0
+  Wire.endTransmission();
+
   // Si el DS1307 esta presente, comenzar la lectura de 8 bytes
-  Wire.requestFrom(0x68, 8);
+  Wire.requestFrom(0x68, 7);
 
   // Recibimos el byte del registro 0x00 y lo convertimos a binario
   datevar.second = bcd2bin(Wire.read());
@@ -64,4 +72,12 @@ date rtcRead()
  */
 unsigned char bin2bcd(unsigned char bin) {
   return (bin / 10 * 16) + (bin % 10);
+}
+
+/**
+ * Convierte un numero BCD a binario
+ */
+unsigned char bcd2bin(unsigned char bcd) {
+  // Convertir decenas y luego unidades a un numero binario
+  return (bcd / 16 * 10) + (bcd % 16);
 }

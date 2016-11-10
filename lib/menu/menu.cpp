@@ -15,7 +15,7 @@ void menuWelcome() {
 	lcdPrint(0, 0, "CONTROL PECERA");
 	lcdPrint(0, 1, "VERSION: " VERSION );
 	delay(1000);
-	lcdClear();
+	//lcdClear();
 }
 
 
@@ -54,7 +54,7 @@ void menuMain() {
 	}
 
 	// Limpio Pantalla
-	lcdClear();
+	//lcdClear();
 
 	// Ejecuto menues
 	switch (menu_option) {
@@ -93,7 +93,13 @@ void menuMain() {
 		}
 		break;
 		case MENU_ESTADO_DATETIME: {
-			lcdPrint(0, 0, "HORA:   22:53:10");
+			// Muestro info basica
+			date datevar = rtcRead();
+			char linea1[17];
+			char linea2[17];
+			sprintf(linea1, "HORA:   %02d:%02d:%02d", datevar.hour, datevar.minute, datevar.second);
+			sprintf(linea2, "FECHA:  %02d/%02d/%02d", datevar.day, datevar.month, datevar.year);			
+			lcdPrint(0, 0, linea1);
 			lcdPrint(0, 1, "FECHA:  29/11/16");
 		}
 		break;
@@ -152,10 +158,11 @@ void menuMain() {
 }
 
 void menuInactivo() {
-	// Limpio Pantalla
-	lcdClear();
 	// Muestro info basica
-	lcdPrint(0, 0, "WT:28C     18:25");
+	date datevar = rtcRead();
+	char linea1[17];
+	sprintf(linea1, "WT:28C     %02d:%02d", datevar.hour, datevar.minute);
+	lcdPrint(0, 0, linea1);
 	lcdPrint(0, 1, "T:32C    Hr:100%");
 
 }

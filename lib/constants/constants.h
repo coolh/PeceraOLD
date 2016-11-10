@@ -38,7 +38,8 @@
 #define KEYPAD_INPUT   0
 
 // Tiempo de inactividad 60s (milisec)
-#define INAC_TIMEOUT  60000
+#define INAC_TIMEOUT  120000
+
 // Tiempo de apagado del display 10m (milisec)
 #define POWERSAVE_TIMEOUT 600000
 

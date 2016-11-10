@@ -97,12 +97,18 @@ void menuMain() {
 		}
 		break;
 		case MENU_ESTADO_MICRO: {
-			unsigned long uptime = millis();
+			/*unsigned long uptime = millis();
 			volatile double hours = (double)uptime / 3600000;
 			char buffer[11];
-			String text = dtostrf(hours, 10, 2, buffer);
-			lcdPrint(0, 0, "UP: " + text + " H");
-			lcdPrint(0, 1, "VERSION:   " VERSION );
+			String text = dtostrf(hours, 10, 2, buffer);*/
+			char buffer[17];
+			unsigned long uptime = millis() / 1000;
+			int days = elapsedDays(uptime);
+			int hours = numberOfHours(uptime);
+			int mins = numberOfMinutes(uptime);
+			sprintf(buffer, "UP: %3dd %2dh %2dm", days, hours, mins);
+			lcdPrint(0, 0, buffer);
+			lcdPrint(0, 1, "VERSION:   " VERSION);
 		}
 		break;
 		case MENU_ESTADO_EXIT: {

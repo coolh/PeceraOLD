@@ -1,14 +1,16 @@
 #include "constants.h"
-#include "lcd.h"
+
 #include "menu.h"
+#include "lcd.h"
 #include "rtc.h"
+#include "sensors.h"
 
 // Variables Globales
-unsigned char menu_option 		= 0;
-int 					button					= 0;
-unsigned long last_push 			= 0;
-unsigned long last_update			= 0;
-bool					power_save 			= FALSE;
+unsigned char menu_option 			= 0;
+int 					button						= 0;
+unsigned long last_button_push 	= 0;
+unsigned long last_menu_update	= 0;
+bool					power_save 				= FALSE;
 
 // Muestro Bienvenida
 void menuWelcome() {
@@ -95,12 +97,14 @@ void menuMain() {
 		case MENU_ESTADO_DATETIME: {
 			// Muestro info basica
 			date datevar = rtcRead();
+			dhsensor TyH;
+			TyH = dht22Read();
 			char linea1[17];
 			char linea2[17];
 			sprintf(linea1, "HORA:   %02d:%02d:%02d", datevar.hour, datevar.minute, datevar.second);
-			sprintf(linea2, "FECHA:  %02d/%02d/%02d", datevar.day, datevar.month, datevar.year);			
+			sprintf(linea2, "FECHA:  %02d/%02d/%02d", datevar.day, datevar.month, datevar.year);
 			lcdPrint(0, 0, linea1);
-			lcdPrint(0, 1, "FECHA:  29/11/16");
+			lcdPrint(0, 1, linea2);
 		}
 		break;
 		case MENU_ESTADO_MICRO: {
@@ -158,13 +162,25 @@ void menuMain() {
 }
 
 void menuInactivo() {
-	// Muestro info basica
-	date datevar = rtcRead();
+	// Variables
 	char linea1[17];
-	sprintf(linea1, "WT:28C     %02d:%02d", datevar.hour, datevar.minute);
-	lcdPrint(0, 0, linea1);
-	lcdPrint(0, 1, "T:32C    Hr:100%");
+	char linea2[17];
+	char temp[5];
+	char hum[4];
 
+	// Leo la hora
+	date datevar = rtcRead();
+
+	// Leo la temperatura y humedad del aire
+	dhsensor TyH = dht22Read();
+	//convierto float a char
+	dtostrf(TyH.temp, 3, 1, temp);
+	dtostrf(TyH.hum, 3, 0, hum);
+	// Formateo las lineas del LCD
+	sprintf(linea1, "W:28.2C    %02d:%02d", datevar.hour, datevar.minute);
+	sprintf(linea2, "T:%sC  Hr:%s%%", temp, hum);
+	lcdPrint(0, 0, linea1);
+	lcdPrint(0, 1, linea2);
 }
 
 void menuUpdate() {
@@ -179,12 +195,12 @@ void menuUpdate() {
 	}
 
 	// Detecto Inactividad
-	if (millis() - last_push >= INAC_TIMEOUT && millis() - last_push <= POWERSAVE_TIMEOUT) {
+	if (millis() - last_button_push >= INAC_TIMEOUT && millis() - last_button_push <= POWERSAVE_TIMEOUT) {
 		menu_option = MENU_INACTIVO;
 	}
 
 	// Apago el display
-	if (millis() - last_push > POWERSAVE_TIMEOUT) {
+	if (millis() - last_button_push > POWERSAVE_TIMEOUT) {
 		power_save = TRUE;
 		lcdOn(FALSE);
 		digitalWrite(BACKLIT, LOW);
@@ -196,14 +212,14 @@ void menuUpdate() {
 	}
 
 	// Entro al menu de configuración (menu_status de 10 a 19)
-	if (button != BTN_NONE || millis() - last_update > 1000) {
+	if (button != BTN_NONE || millis() - last_menu_update > 1000) {
 		menuMain();
-		last_update = millis();
+		last_menu_update = millis();
 	}
 
 	// Seteo estado pulsacion
 	if (button != BTN_NONE) {
-		last_push = millis();
+		last_button_push = millis();
 		// Prendo el display
 		if(power_save == TRUE) {
 			digitalWrite(BACKLIT, HIGH);

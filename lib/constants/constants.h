@@ -37,6 +37,9 @@
 // Input de botones LCD
 #define KEYPAD_INPUT   0
 
+// Comm sensor de temperatura
+#define DHTPIN  3
+
 // Tiempo de inactividad 60s (milisec)
 #define INAC_TIMEOUT  120000
 

@@ -2,6 +2,7 @@
 #include "lcd.h"
 #include "menu.h"
 #include "rtc.h"
+#include "sensors.h"
 
 // variables
 date datevar;
@@ -14,12 +15,10 @@ void setup() {
 	wireInit();
 	// Inicializo Serial
 	Serial.begin(9600);
-	// Seteo Salidas
-	pinMode(BACKLIT, OUTPUT); // Control de backlight del LCD
-	// Activo backlight
-	digitalWrite(BACKLIT, HIGH);
+
 	// Muestro bienvenida
 	menuWelcome();
+
 	// Muestro menu inactivo
 	menuInactivo();
 }
@@ -30,10 +29,4 @@ void loop() {
 
 	// Proceso Menu
 	menuUpdate();
-
-	// Leo hora
-	datevar = rtcRead();
-
-	// Pauso
-	//delay(500);
 }

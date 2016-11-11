@@ -2,7 +2,6 @@
 #include "constants.h"
 #include "lcd.h"
 
-
 // Global Variables
 // Inicializo variable para LCD
 LiquidCrystal lcd(RS, ENABLE, D4, D5, D6, D7);
@@ -27,6 +26,12 @@ void lcdInit() {
 
   // set up the LCD's number of columns and rows:
   lcd.begin(LCD_COLS, LCD_ROWS);
+
+  // Seteo Salida backlite
+  pinMode(BACKLIT, OUTPUT); // Control de backlight del LCD
+
+  // Activo backlight
+  digitalWrite(BACKLIT, HIGH);
 }
 
 void lcdPrint(int x, int y, String text) {

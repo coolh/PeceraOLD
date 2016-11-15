@@ -16,6 +16,7 @@ void wireInit() {
 bool rtcWrite(date datevar) {
   // Iniciar el intercambio de información con el DS1307 (0x68)
   Wire.beginTransmission(0x68);
+  
   // Escribir la dirección del registro segundero
   Wire.write(0x00);
   // Escribir valores en los registros, nos aseguramos que el bit clock halt
@@ -50,7 +51,9 @@ struct date rtcRead()
 
   // Terminamos la escritura y verificamos si el DS1307 respondio
   // Si la escritura se llevo a cabo el metodo endTransmission retorna 0
-  Wire.endTransmission();
+  if (Wire.endTransmission()) {
+    return datevar;
+  }
 
   // Si el DS1307 esta presente, comenzar la lectura de 8 bytes
   Wire.requestFrom(0x68, 7);

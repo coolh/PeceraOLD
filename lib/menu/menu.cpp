@@ -6,11 +6,12 @@
 #include "sensors.h"
 
 // Variables Globales
-unsigned char menu_option 			= 0;
-int 					button						= 0;
+unsigned int menu_option 			= 0;
+unsigned int button						= 0;
 unsigned long last_button_push 	= 0;
 unsigned long last_menu_update	= 0;
 bool					power_save 				= FALSE;
+bool					force_update			= FALSE;
 
 // Muestro Bienvenida
 void menuWelcome() {
@@ -97,8 +98,6 @@ void menuMain() {
 		case MENU_ESTADO_DATETIME: {
 			// Muestro info basica
 			date datevar = rtcRead();
-			dhsensor TyH;
-			TyH = dht22Read();
 			char linea1[17];
 			char linea2[17];
 			sprintf(linea1, "HORA:   %02d:%02d:%02d", datevar.hour, datevar.minute, datevar.second);
@@ -149,8 +148,32 @@ void menuMain() {
 		}
 		break;
 		case MENU_CONFIG_DATE: {
+			volatile bool salir = FALSE;
 			lcdPrint(0, 0, "   CONFIGURAR   ");
 			lcdPrint(0, 1, "< FECHA Y HORA >");
+			if (button == BTN_SELECT) {
+				// Leo la hora
+				date datevar = rtcRead();
+				while (salir == FALSE) {
+					// Variables
+					char linea1[17];
+					char linea2[17];
+					// Leo botones
+					button = lcdReadButtons();
+					// Delay para evitar repetir teclas
+					if (button != BTN_NONE) {
+						delay(300);
+					}
+					sprintf(linea1, "HORA:   %02d:%02d:%02d", datevar.hour, datevar.minute, datevar.second);
+					sprintf(linea2, "FECHA:  %02d/%02d/%02d", datevar.day, datevar.month, datevar.year);
+					lcdPrint(0, 0, linea1);
+					lcdPrint(0, 1, linea2);
+					if (button == BTN_SELECT) {
+						salir = TRUE;
+						force_update = TRUE;
+					}					
+				}
+			}
 		}
 		break;
 		case MENU_CONFIG_EXIT: {
@@ -174,11 +197,12 @@ void menuInactivo() {
 	// Leo la temperatura y humedad del aire
 	dhsensor TyH = dht22Read();
 	//convierto float a char
-	dtostrf(TyH.temp, 3, 1, temp);
+	dtostrf(TyH.temp, 4, 1, temp);
 	dtostrf(TyH.hum, 3, 0, hum);
 	// Formateo las lineas del LCD
 	sprintf(linea1, "W:28.2C    %02d:%02d", datevar.hour, datevar.minute);
-	sprintf(linea2, "T:%sC  Hr:%s%%", temp, hum);
+	sprintf(linea2, "T:%3sC  Hr:%s%%", temp, hum);
+
 	lcdPrint(0, 0, linea1);
 	lcdPrint(0, 1, linea2);
 }
@@ -211,10 +235,11 @@ void menuUpdate() {
 		menu_option = MENU_ESTADO;
 	}
 
-	// Entro al menu de configuración (menu_status de 10 a 19)
-	if (button != BTN_NONE || millis() - last_menu_update > 1000) {
+	// Muestro menu de configuración al presionar un boton, cada un segundo, y cuando force_update = TRUE
+	if (button != BTN_NONE || millis() - last_menu_update > 1000 || force_update == TRUE) {
 		menuMain();
 		last_menu_update = millis();
+		force_update = FALSE;
 	}
 
 	// Seteo estado pulsacion

@@ -13,10 +13,12 @@ unsigned long lastread = 0;
 // Leo temperatura
 struct dhsensor dht22Read() {
   if (millis() - lastread > 5000) {
-    myDHT22.readData();
-    dhsensor.temp = myDHT22.getTemperatureC();
-    dhsensor.hum = myDHT22.getHumidity();
-    lastread = millis();
+    if (myDHT22.readData() == DHT_ERROR_NONE) {
+      myDHT22.readData();
+      dhsensor.temp = myDHT22.getTemperatureC();
+      dhsensor.hum = myDHT22.getHumidity();
+      lastread = millis();
+    }
   }
   return dhsensor;
 }

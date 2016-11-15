@@ -1,8 +1,8 @@
-#include "constants.h"
-#include "lcd.h"
-#include "menu.h"
-#include "rtc.h"
-#include "sensors.h"
+#include "constants/constants.h"
+#include "lcd/lcd.h"
+#include "menu/menu.h"
+#include "rtc/rtc.h"
+#include "sensors/sensors.h"
 
 // variables
 date datevar;

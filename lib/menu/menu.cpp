@@ -162,6 +162,7 @@ void menuMain() {
 					button = lcdReadButtons();
 					// Delay para evitar repetir teclas
 					if (button != BTN_NONE) {
+						Serial.println("button none");
 						delay(300);
 					}
 					sprintf(linea1, "HORA:   %02d:%02d:%02d", datevar.hour, datevar.minute, datevar.second);
@@ -170,8 +171,9 @@ void menuMain() {
 					lcdPrint(0, 1, linea2);
 					if (button == BTN_SELECT) {
 						salir = TRUE;
+						Serial.println("Salir");
 						force_update = TRUE;
-					}					
+					}
 				}
 			}
 		}

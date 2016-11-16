@@ -6,7 +6,7 @@
 #include "sensors/sensors.h"
 
 // Variables Globales
-unsigned int menu_option 			= 25;
+unsigned int menu_option 			= 0;
 unsigned int button						= 0;
 bool				 force_update			= FALSE;
 
@@ -491,7 +491,8 @@ void menuMain() {
 					if (button == BTN_SELECT) {
 						salir = TRUE;
 						force_update = TRUE;
-						
+						rtcWrite(datevar);
+						lcdCursor(FALSE);
 					}
 				}
 			}

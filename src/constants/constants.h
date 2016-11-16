@@ -2,7 +2,6 @@
 #define CONSTANTS_H
 
 #include <arduino.h>
-#include <stdio.h>
 
 // Version
 #define VERSION   "0.0.1"
@@ -38,8 +37,12 @@
 // Input de botones LCD
 #define KEYPAD_INPUT   0
 
+// Comm sensor de temperatura
+#define DHTPIN  3
+
 // Tiempo de inactividad 60s (milisec)
-#define INAC_TIMEOUT  60000
+#define INAC_TIMEOUT  120000
+
 // Tiempo de apagado del display 10m (milisec)
 #define POWERSAVE_TIMEOUT 600000
 
@@ -63,5 +66,16 @@
 #define MENU_CONFIG_FANS        24
 #define MENU_CONFIG_DATE        25
 #define MENU_CONFIG_EXIT        26
+
+/* Useful Constants */
+#define SECS_PER_MIN  (60UL)
+#define SECS_PER_HOUR (3600UL)
+#define SECS_PER_DAY  (SECS_PER_HOUR * 24UL)
+
+/* Useful Macros for getting elapsed time */
+#define numberOfSeconds(_time_) (_time_ % SECS_PER_MIN)
+#define numberOfMinutes(_time_) ((_time_ / SECS_PER_MIN) % SECS_PER_MIN)
+#define numberOfHours(_time_) (( _time_% SECS_PER_DAY) / SECS_PER_HOUR)
+#define elapsedDays(_time_) ( _time_ / SECS_PER_DAY)
 
 #endif

@@ -1,6 +1,5 @@
 #ifndef LCD_H
 #define LCD_H
-#include <WString.h>
 
 // Inicializa LCD
 void lcdInit();
@@ -14,13 +13,13 @@ int lcdReadButtons();
 // Clear LCD
 void lcdClear();
 
-// Apago LCD
-void lcdOff();
+// Prendo y apago LCD
+void lcdOn(bool state);
 
-// Prendo LCD
-void lcdOn();
+// Escribo un caracter customizable
+void lcdWriteChar(int x, int y, byte custom_char[8], int mempos);
 
-// autoscroll
-void lcdScroll(bool state);
+// Muestro el cursor
+void lcdCursor(bool state);
 
 #endif

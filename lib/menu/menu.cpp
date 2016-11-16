@@ -1,28 +1,28 @@
 #include "constants.h"
-#include "lcd.h"
+
 #include "menu.h"
+#include "lcd.h"
+#include "rtc.h"
+#include "sensors.h"
 
 // Variables Globales
-unsigned long last_push 			= 0;
-unsigned long last_update			= 0;
-bool					inactivo 				= TRUE;
-bool					power_save 			= FALSE;
-unsigned char menu_option 		= 0;
-int 					button					= 0;
+unsigned int menu_option 			= 0;
+unsigned int button						= 0;
+unsigned long last_button_push 	= 0;
+unsigned long last_menu_update	= 0;
+bool					power_save 				= FALSE;
+bool					force_update			= FALSE;
 
 // Muestro Bienvenida
 void menuWelcome() {
 	lcdPrint(0, 0, "CONTROL PECERA");
 	lcdPrint(0, 1, "VERSION: " VERSION );
 	delay(1000);
-	lcdClear();
+	//lcdClear();
 }
 
 
 void menuMain() {
-	// Last update
-	last_update = millis();
-
 	// Manejo del menu
 	if (button == BTN_UP && menu_option % 10 == 0) {
 		if (menu_option > MENU_ESTADO && menu_option <= MENU_CONFIG) {
@@ -57,7 +57,7 @@ void menuMain() {
 	}
 
 	// Limpio Pantalla
-	lcdClear();
+	//lcdClear();
 
 	// Ejecuto menues
 	switch (menu_option) {
@@ -67,7 +67,7 @@ void menuMain() {
 		break;
 		case MENU_ESTADO: {
 			lcdPrint(0, 0, "     ESTADO     ");
-			lcdPrint(0, 1, "    OPCIONES   >");
+			lcdPrint(0, 1, "  INFORMACION  >");
 		}
 		break;
 		case MENU_ESTADO_LEDS: {
@@ -96,17 +96,25 @@ void menuMain() {
 		}
 		break;
 		case MENU_ESTADO_DATETIME: {
-			lcdPrint(0, 0, "HORA:   22:53:10");
-			lcdPrint(0, 1, "FECHA:  29/11/16");
+			// Muestro info basica
+			date datevar = rtcRead();
+			char linea1[17];
+			char linea2[17];
+			sprintf(linea1, "HORA:   %02d:%02d:%02d", datevar.hour, datevar.minute, datevar.second);
+			sprintf(linea2, "FECHA:  %02d/%02d/%02d", datevar.day, datevar.month, datevar.year);
+			lcdPrint(0, 0, linea1);
+			lcdPrint(0, 1, linea2);
 		}
 		break;
 		case MENU_ESTADO_MICRO: {
-			unsigned long uptime = millis();
-			volatile double hours = (double)uptime / 3600000;
-			char buffer[11];
-			String text = dtostrf(hours, 10, 2, buffer);
-			lcdPrint(0, 0, "UP: " + text + " H");
-			lcdPrint(0, 1, "VERSION:   " VERSION );
+			char linea1[17];
+			unsigned long uptime = millis() / 1000;
+			int days = elapsedDays(uptime);
+			int hours = numberOfHours(uptime);
+			int mins = numberOfMinutes(uptime);
+			sprintf(linea1, "UP: %3dd %2dh %2dm", days, hours, mins);
+			lcdPrint(0, 0, linea1);
+			lcdPrint(0, 1, "VERSION:   " VERSION);
 		}
 		break;
 		case MENU_ESTADO_EXIT: {
@@ -140,8 +148,34 @@ void menuMain() {
 		}
 		break;
 		case MENU_CONFIG_DATE: {
+			volatile bool salir = FALSE;
 			lcdPrint(0, 0, "   CONFIGURAR   ");
 			lcdPrint(0, 1, "< FECHA Y HORA >");
+			if (button == BTN_SELECT) {
+				// Leo la hora
+				date datevar = rtcRead();
+				while (salir == FALSE) {
+					// Variables
+					char linea1[17];
+					char linea2[17];
+					// Leo botones
+					button = lcdReadButtons();
+					// Delay para evitar repetir teclas
+					if (button != BTN_NONE) {
+						Serial.println("button none");
+						delay(300);
+					}
+					sprintf(linea1, "HORA:   %02d:%02d:%02d", datevar.hour, datevar.minute, datevar.second);
+					sprintf(linea2, "FECHA:  %02d/%02d/%02d", datevar.day, datevar.month, datevar.year);
+					lcdPrint(0, 0, linea1);
+					lcdPrint(0, 1, linea2);
+					if (button == BTN_SELECT) {
+						salir = TRUE;
+						Serial.println("Salir");
+						force_update = TRUE;
+					}
+				}
+			}
 		}
 		break;
 		case MENU_CONFIG_EXIT: {
@@ -153,18 +187,33 @@ void menuMain() {
 }
 
 void menuInactivo() {
-	// Limpio Pantalla
-	lcdClear();
+	// Variables
+	char linea1[17];
+	char linea2[17];
+	char temp[5];
+	char hum[4];
 
-	// Muestro info basica
-	lcdPrint(0, 0, "WT:28C     18:25");
-	lcdPrint(0, 1, "T:32C    Hr:100%");
+	// Leo la hora
+	date datevar = rtcRead();
+
+	// Leo la temperatura y humedad del aire
+	dhsensor TyH = dht22Read();
+	//convierto float a char
+	dtostrf(TyH.temp, 4, 1, temp);
+	dtostrf(TyH.hum, 3, 0, hum);
+	// Formateo las lineas del LCD
+	sprintf(linea1, "W:28.2C    %02d:%02d", datevar.hour, datevar.minute);
+	sprintf(linea2, "T:%3sC  Hr:%s%%", temp, hum);
+
+	lcdPrint(0, 0, linea1);
+	lcdPrint(0, 1, linea2);
 }
 
 void menuUpdate() {
 	// Variables
+
+	// Leo boton
 	button = lcdReadButtons();
-	//unsigned char old_menu_option = menu_option;
 
 	// Delay para evitar repetir teclas
 	if (button != BTN_NONE) {
@@ -172,43 +221,37 @@ void menuUpdate() {
 	}
 
 	// Detecto Inactividad
-	if (millis() - last_push >= INAC_TIMEOUT && millis() - last_push <= POWERSAVE_TIMEOUT) {
-		inactivo = TRUE;
+	if (millis() - last_button_push >= INAC_TIMEOUT && millis() - last_button_push <= POWERSAVE_TIMEOUT) {
 		menu_option = MENU_INACTIVO;
 	}
 
 	// Apago el display
-	if (millis() - last_push > POWERSAVE_TIMEOUT) {
+	if (millis() - last_button_push > POWERSAVE_TIMEOUT) {
 		power_save = TRUE;
-		lcdOff();
+		lcdOn(FALSE);
 		digitalWrite(BACKLIT, LOW);
 	}
-
-	/*/ Proceso el menu inactivo
-	if (menu_option == MENU_INACTIVO) {
-		if (old_menu_option != MENU_INACTIVO) {
-			menuInactivo();
-		}
-	}*/
 
 	// Entro al menu con select y seteo el default
 	if (button == BTN_SELECT && menu_option == MENU_INACTIVO) {
 		menu_option = MENU_ESTADO;
 	}
 
-	// Entro al menu de configuración (menu_status de 10 a 19)
-	if ((button != BTN_NONE && menu_option != MENU_INACTIVO) || (millis() - last_update == 1000 && power_save != TRUE)) {
+	// Muestro menu de configuración al presionar un boton, cada un segundo, y cuando force_update = TRUE
+	if (button != BTN_NONE || millis() - last_menu_update > 1000 || force_update == TRUE) {
 		menuMain();
+		last_menu_update = millis();
+		force_update = FALSE;
 	}
 
 	// Seteo estado pulsacion
 	if (button != BTN_NONE) {
+		last_button_push = millis();
+		// Prendo el display
 		if(power_save == TRUE) {
 			digitalWrite(BACKLIT, HIGH);
-			lcdOn();
+			lcdOn(TRUE);
 			power_save = FALSE;
 		}
-		inactivo = FALSE;
-		last_push = millis();
 	}
 }

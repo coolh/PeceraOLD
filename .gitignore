@@ -1,3 +1,5 @@
 .pioenvs/*
 *.pdsbak
 .piolibdeps/*
+*.yml
+*.workspace

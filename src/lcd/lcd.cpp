@@ -59,6 +59,7 @@ void lcdClear() {
 	lcd.clear();
 }
 
+// Enciendo y apago el LCD
 void lcdOn(bool state) {
   if (state == TRUE) {
     lcd.display();
@@ -75,11 +76,12 @@ void lcdWriteChar(int x, int y, byte custom_char[8], int mempos) {
   lcd.write(byte(mempos));
 }
 
-void lcdScroll(bool state) {
+// Muestro el cursor
+void lcdCursor(bool state) {
   if (state == TRUE) {
-    lcd.autoscroll();
+    lcd.cursor();
   }
   else {
-    lcd.noAutoscroll();
+    lcd.noCursor();
   }
 }

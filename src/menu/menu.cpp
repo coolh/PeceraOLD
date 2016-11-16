@@ -6,12 +6,9 @@
 #include "sensors/sensors.h"
 
 // Variables Globales
-unsigned int menu_option 			= 0;
+unsigned int menu_option 			= 25;
 unsigned int button						= 0;
-unsigned long last_button_push 	= 0;
-unsigned long last_menu_update	= 0;
-bool					power_save 				= FALSE;
-bool					force_update			= FALSE;
+bool				 force_update			= FALSE;
 
 // Muestro Bienvenida
 void menuWelcome() {
@@ -148,31 +145,353 @@ void menuMain() {
 		}
 		break;
 		case MENU_CONFIG_DATE: {
-			volatile bool salir = FALSE;
+			// Variables
+			bool salir = FALSE;
+			char linea1[17];
+			char linea2[17];
+			unsigned char option = 0;
+
+			// Imprimo titulo
 			lcdPrint(0, 0, "   CONFIGURAR   ");
 			lcdPrint(0, 1, "< FECHA Y HORA >");
 			if (button == BTN_SELECT) {
 				// Leo la hora
 				date datevar = rtcRead();
+				// Imprimo menu
+				sprintf(linea1, "HORA:   %02d:%02d:%02d", datevar.hour, datevar.minute, datevar.second);
+				sprintf(linea2, "FECHA:  %02d/%02d/%02d", datevar.day, datevar.month, datevar.year);
+				lcdPrint(0, 0, linea1);
+				lcdPrint(0, 1, linea2);
+
+				// Entro en el bucle de configuracion
 				while (salir == FALSE) {
-					// Variables
-					char linea1[17];
-					char linea2[17];
 					// Leo botones
 					button = lcdReadButtons();
-					// Delay para evitar repetir teclas
-					if (button != BTN_NONE) {
-						Serial.println("button none");
-						delay(300);
+					// Espero 200ms
+					delay(200);
+					// Configuro variables de fecha
+					switch (option) {
+						// Hour
+						case 0: {
+							lcdPrint(9, 0, "");
+							lcdCursor(TRUE);
+							switch (button) {
+								case BTN_UP: {
+									if (datevar.hour < 23) {
+										datevar.hour++;
+										sprintf(linea1, "%02d", datevar.hour);
+										lcdPrint(8, 0, linea1);
+									}
+									else {
+										datevar.hour = 0;
+										sprintf(linea1, "%02d", datevar.hour);
+										lcdPrint(8, 0, linea1);
+									}
+								}
+								break;
+								case BTN_DOWN: {
+									if (datevar.hour > 0) {
+										datevar.hour--;
+										sprintf(linea1, "%02d", datevar.hour);
+										lcdPrint(8, 0, linea1);
+									}
+									else {
+										datevar.hour = 23;
+										sprintf(linea1, "%02d", datevar.hour);
+										lcdPrint(8, 0, linea1);
+									}
+								}
+								break;
+								case BTN_RIGHT: {
+									if (option < 5) {
+										option++;
+									}
+									else {
+										option = 0;
+									}
+								}
+								break;
+								case BTN_LEFT: {
+									if (option > 0) {
+										option--;
+									}
+									else {
+										option = 5;
+									}
+								}
+								break;
+							}
+						}
+						break;
+						// Minute
+						case 1: {
+							lcdPrint(12, 0, "");
+							lcdCursor(TRUE);
+							switch (button) {
+								case BTN_UP: {
+									if (datevar.minute < 59) {
+										datevar.minute++;
+										sprintf(linea1, "%02d", datevar.minute);
+										lcdPrint(11, 0, linea1);
+									}
+									else {
+										datevar.minute = 0;
+										sprintf(linea1, "%02d", datevar.minute);
+										lcdPrint(11, 0, linea1);
+									}
+								}
+								break;
+								case BTN_DOWN: {
+									if (datevar.minute > 0) {
+										datevar.minute--;
+										sprintf(linea1, "%02d", datevar.minute);
+										lcdPrint(11, 0, linea1);
+									}
+									else {
+										datevar.minute = 59;
+										sprintf(linea1, "%02d", datevar.minute);
+										lcdPrint(11, 0, linea1);
+									}
+								}
+								break;
+								case BTN_RIGHT: {
+									if (option < 5) {
+										option++;
+									}
+									else {
+										option = 0;
+									}
+								}
+								break;
+								case BTN_LEFT: {
+									if (option > 0) {
+										option--;
+									}
+									else {
+										option = 5;
+									}
+								}
+								break;
+							}
+
+						}
+						break;
+						// Second
+						case 2: {
+							lcdPrint(15, 0, "");
+							lcdCursor(TRUE);
+							switch (button) {
+								case BTN_UP: {
+									if (datevar.second < 59) {
+										datevar.second++;
+										sprintf(linea1, "%02d", datevar.second);
+										lcdPrint(14, 0, linea1);
+									}
+									else {
+										datevar.second = 0;
+										sprintf(linea1, "%02d", datevar.second);
+										lcdPrint(14, 0, linea1);
+									}
+								}
+								break;
+								case BTN_DOWN: {
+									if (datevar.second > 0) {
+										datevar.second--;
+										sprintf(linea1, "%02d", datevar.second);
+										lcdPrint(14, 0, linea1);
+									}
+									else {
+										datevar.second = 59;
+										sprintf(linea1, "%02d", datevar.second);
+										lcdPrint(14, 0, linea1);
+									}
+								}
+								break;
+								case BTN_RIGHT: {
+									if (option < 5) {
+										option++;
+									}
+									else {
+										option = 0;
+									}
+								}
+								break;
+								case BTN_LEFT: {
+									if (option > 0) {
+										option--;
+									}
+									else {
+										option = 5;
+									}
+								}
+								break;
+							}
+						}
+						break;
+						// Day
+						case 3: {
+							lcdPrint(9, 1, "");
+							lcdCursor(TRUE);
+							switch (button) {
+								case BTN_UP: {
+									if (datevar.day < 31) {
+										datevar.day++;
+										sprintf(linea2, "%02d", datevar.day);
+										lcdPrint(8, 1, linea2);
+									}
+									else {
+										datevar.day = 0;
+										sprintf(linea2, "%02d", datevar.day);
+										lcdPrint(8, 1, linea2);
+									}
+								}
+								break;
+								case BTN_DOWN: {
+									if (datevar.day > 0) {
+										datevar.day--;
+										sprintf(linea2, "%02d", datevar.day);
+										lcdPrint(8, 1, linea2);
+									}
+									else {
+										datevar.day = 31;
+										sprintf(linea2, "%02d", datevar.day);
+										lcdPrint(8, 1, linea2);
+									}
+								}
+								break;
+								case BTN_RIGHT: {
+									if (option < 5) {
+										option++;
+									}
+									else {
+										option = 0;
+									}
+								}
+								break;
+								case BTN_LEFT: {
+									if (option > 0) {
+										option--;
+									}
+									else {
+										option = 5;
+									}
+								}
+								break;
+							}
+						}
+						break;
+						// Month
+						case 4: {
+							lcdPrint(12, 1, "");
+							lcdCursor(TRUE);
+							switch (button) {
+								case BTN_UP: {
+									if (datevar.month < 12) {
+										datevar.month++;
+										sprintf(linea2, "%02d", datevar.month);
+										lcdPrint(11, 1, linea2);
+									}
+									else {
+										datevar.month = 0;
+										sprintf(linea2, "%02d", datevar.month);
+										lcdPrint(11, 1, linea2);
+									}
+								}
+								break;
+								case BTN_DOWN: {
+									if (datevar.month > 0) {
+										datevar.month--;
+										sprintf(linea2, "%02d", datevar.month);
+										lcdPrint(11, 1, linea2);
+									}
+									else {
+										datevar.month = 12;
+										sprintf(linea2, "%02d", datevar.month);
+										lcdPrint(11, 1, linea2);
+									}
+								}
+								break;
+								case BTN_RIGHT: {
+									if (option < 5) {
+										option++;
+									}
+									else {
+										option = 0;
+									}
+								}
+								break;
+								case BTN_LEFT: {
+									if (option > 0) {
+										option--;
+									}
+									else {
+										option = 5;
+									}
+								}
+								break;
+							}
+						}
+						break;
+						// Year
+						case 5: {
+							lcdPrint(15, 1, "");
+							lcdCursor(TRUE);
+							switch (button) {
+								case BTN_UP: {
+									if (datevar.year < 99) {
+										datevar.year++;
+										sprintf(linea2, "%02d", datevar.year);
+										lcdPrint(14, 1, linea2);
+									}
+									else {
+										datevar.year = 0;
+										sprintf(linea2, "%02d", datevar.year);
+										lcdPrint(14, 1, linea2);
+									}
+								}
+								break;
+								case BTN_DOWN: {
+									if (datevar.year > 0) {
+										datevar.year--;
+										sprintf(linea2, "%02d", datevar.year);
+										lcdPrint(14, 1, linea2);
+									}
+									else {
+										datevar.year = 99;
+										sprintf(linea2, "%02d", datevar.year);
+										lcdPrint(14, 1, linea2);
+									}
+								}
+								break;
+								case BTN_RIGHT: {
+									if (option < 5) {
+										option++;
+									}
+									else {
+										option = 0;
+									}
+								}
+								break;
+								case BTN_LEFT: {
+									if (option > 0) {
+										option--;
+									}
+									else {
+										option = 5;
+									}
+								}
+								break;
+							}
+
+						}
+						break;
 					}
-					sprintf(linea1, "HORA:   %02d:%02d:%02d", datevar.hour, datevar.minute, datevar.second);
-					sprintf(linea2, "FECHA:  %02d/%02d/%02d", datevar.day, datevar.month, datevar.year);
-					lcdPrint(0, 0, linea1);
-					lcdPrint(0, 1, linea2);
+
+					// Salgo al apretar SELECT
 					if (button == BTN_SELECT) {
 						salir = TRUE;
-						Serial.println("Salir");
 						force_update = TRUE;
+						
 					}
 				}
 			}
@@ -211,6 +530,9 @@ void menuInactivo() {
 
 void menuUpdate() {
 	// Variables
+	unsigned long last_button_push 	= 0;
+	unsigned long last_menu_update	= 0;
+	bool					power_save 				= FALSE;
 
 	// Leo boton
 	button = lcdReadButtons();
@@ -238,10 +560,10 @@ void menuUpdate() {
 	}
 
 	// Muestro menu de configuración al presionar un boton, cada un segundo, y cuando force_update = TRUE
-	if (button != BTN_NONE || millis() - last_menu_update > 1000 || force_update == TRUE) {
-		menuMain();
+	if ((button != BTN_NONE) || (millis() - last_menu_update > 1000) || (force_update == TRUE)) {
 		last_menu_update = millis();
 		force_update = FALSE;
+		menuMain();
 	}
 
 	// Seteo estado pulsacion

@@ -5,7 +5,6 @@
 #include "sensors/sensors.h"
 
 // variables
-date datevar;
 
 // Setup
 void setup() {

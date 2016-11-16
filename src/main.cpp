@@ -27,5 +27,7 @@ void loop() {
 	// Variables
 
 	// Proceso Menu
-	menuUpdate();
+	//menuUpdate();
+	// Guardo historico de sensores
+	sensorStore();
 }

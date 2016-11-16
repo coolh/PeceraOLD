@@ -9,4 +9,7 @@ struct dhsensor {
 // Leo temperatura
 struct dhsensor dht22Read();
 
+// Historico de sensores
+void sensorStore();
+
 #endif

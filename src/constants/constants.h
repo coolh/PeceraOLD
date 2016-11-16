@@ -46,8 +46,11 @@
 // Tiempo de apagado del display 10m (milisec)
 #define POWERSAVE_TIMEOUT 600000
 
+// Intervalo de guardodo de datos historicos
+#define STORE_DELAY 10000
+
 // Estado del menu LCD
-#define MENU_INACTIVO           0
+#define MENU_INACTIVO         0
 // Menu estado
 #define MENU_ESTADO           10
 #define MENU_ESTADO_LEDS      11

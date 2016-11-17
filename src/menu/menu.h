@@ -13,4 +13,7 @@ void menuInactivo();
 // Menu Principal
 void menuMain();
 
+// Histograma
+void menuDisplayHisto(float data[18]);
+
 #endif

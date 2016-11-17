@@ -70,8 +70,7 @@ void lcdOn(bool state) {
 }
 
 // Escribo caracteres especiales
-void lcdWriteChar(int x, int y, byte custom_char[8], int mempos) {
-  lcd.createChar(mempos, custom_char);
+void lcdWriteChar(int x, int y, int mempos) {
   lcd.setCursor(x, y);
   lcd.write(byte(mempos));
 }

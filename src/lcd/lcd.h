@@ -17,7 +17,7 @@ void lcdClear();
 void lcdOn(bool state);
 
 // Escribo un caracter customizable
-void lcdWriteChar(int x, int y, byte custom_char[8], int mempos);
+void lcdWriteChar(int x, int y, int mempos);
 
 // Muestro el cursor
 void lcdCursor(bool state);

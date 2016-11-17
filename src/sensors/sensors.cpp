@@ -1,29 +1,36 @@
-#include <DHT22.h>
+#include <Adafruit_Sensor.h>
+#include <DHT.h>
+#include <DHT_U.h>
 #include <stdio.h>
 
 #include "constants/constants.h"
 #include "sensors.h"
 
 // Variables Globales
-DHT22 myDHT22(DHTPIN);
+DHT_Unified dht(DHTPIN, DHTTYPE);
 dhsensor dhsensor;
 unsigned long last_sensor_read = 0;
 unsigned long last_sensor_store = 0;
+float air_temp[18]  = { -1000, -1000, -1000, -1000, -1000, -1000, -1000, -1000, -1000, -1000, -1000, -1000, -1000, -1000, -1000, -1000, -1000, -1000 };
+float hum[18]	  		= { -1000, -1000, -1000, -1000, -1000, -1000, -1000, -1000, -1000, -1000, -1000, -1000, -1000, -1000, -1000, -1000, -1000, -1000 };
 
-// Historico de sensores
-unsigned char store_index = 0;
-float air_temp[18];
-float hum[18];
+// Inicializo DHT22
+void dhtInit() {
+  dht.begin();
+}
 
 // Leo temperatura
 struct dhsensor dht22Read() {
   if (millis() - last_sensor_read > 5000) {
-    if (myDHT22.readData() == DHT_ERROR_NONE) {
-      myDHT22.readData();
-      dhsensor.temp = myDHT22.getTemperatureC();
-      dhsensor.hum = myDHT22.getHumidity();
-      last_sensor_read = millis();
-    }
+    // Print temp and hum
+    sensors_event_t event;
+    dht.temperature().getEvent(&event);
+    dhsensor.temp = event.temperature;
+    dht.humidity().getEvent(&event);
+    dhsensor.hum = event.relative_humidity;
+    Serial.print  ("Temperature:   "); Serial.print(dhsensor.temp); Serial.println(" *C");
+    Serial.print  ("Humidity:   "); Serial.print(dhsensor.hum); Serial.println(" *C");
+    last_sensor_read = millis();
   }
   return dhsensor;
 }
@@ -32,10 +39,10 @@ struct dhsensor dht22Read() {
 void sensorStore() {
   // Variables
   int i;
-  float aTMax = -100;
-  float aTMin = 100;
-  float hMax = 0;
-  float hMin = 100;
+  float aTMax = -1000;
+  float aTMin = 1000;
+  float hMax = -1000;
+  float hMin = 1000;
 
   // Ejecuto cada STORE_DELAY milis del ultimo store
   if (millis() - last_sensor_store > STORE_DELAY) {
@@ -43,30 +50,32 @@ void sensorStore() {
     while (millis() - last_sensor_read < 5000) {
       delay(1000);
     }
-    // Leo el DHT22
-    if (myDHT22.readData() == DHT_ERROR_NONE) {
-      myDHT22.readData();
-      last_sensor_read = millis();
-    }
     // Muevo valores viejos una posicion atras
     for (i = 1; i < 16; i++) {
       air_temp[i-1] = air_temp[i];
       hum[i-1] = hum[i];
     }
     // Escribo ultimos valores
-    air_temp[15] = myDHT22.getTemperatureC();
-    hum[15] = myDHT22.getHumidity();
+    // Leo el DHT22
+    Serial.println("Voy a leer");
+    //air_temp[15] = dht.readTemperature();
+    //hum[15] = dht.readHumidity();
+    last_sensor_read = millis();
     last_sensor_store = millis();
+    Serial.println(air_temp[15]);
+    Serial.println(hum[15]);
     // Busco MAX y MIN
     for (i = 0; i < 16; i++) {
-      if (air_temp[i] > aTMax)
-        aTMax = air_temp[i];
-      if (air_temp[i] < aTMin)
-        aTMin = air_temp[i];
-      if (hum[i] > hMax)
-        hMax = air_temp[i];
-      if (air_temp[i] < hMin)
-        hMin = air_temp[i];
+      if (air_temp[i] != -1000) {
+        if (air_temp[i] > aTMax)
+          aTMax = air_temp[i];
+        if (air_temp[i] < aTMin)
+          aTMin = air_temp[i];
+        if (hum[i] > hMax)
+          hMax = hum[i];
+        if (air_temp[i] < hMin)
+          hMin = hum[i];
+      }
     }
     air_temp[16] = aTMin;
     air_temp[17] = aTMax;

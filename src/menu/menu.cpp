@@ -1,14 +1,19 @@
-#include "constants/constants.h"
+#include <math.h>
 
+#include "constants/constants.h"
 #include "menu.h"
 #include "lcd/lcd.h"
 #include "rtc/rtc.h"
 #include "sensors/sensors.h"
 
 // Variables Globales
-unsigned int menu_option 			= 0;
-unsigned int button						= 0;
-bool				 force_update			= FALSE;
+unsigned int		menu_option 			= 0;
+unsigned int		button						= 0;
+unsigned long		last_button_push 	= 0;
+unsigned long		last_menu_update	= 0;
+bool						power_save 				= FALSE;
+bool						force_update			= FALSE;
+
 
 // Muestro Bienvenida
 void menuWelcome() {
@@ -74,12 +79,22 @@ void menuMain() {
 		break;
 		case MENU_ESTADO_TEMP1: {
 			lcdPrint(0, 0, "TEMP AGUA:   27C");
-			lcdPrint(0, 1, "--__-_._--.-_._-");
+			lcdPrint(0, 1, "                ");
 		}
 		break;
 		case MENU_ESTADO_TEMP2: {
-			lcdPrint(0, 0, "TEMP AIRE:   33C");
-			lcdPrint(0, 1, "--_.-_-_-.-._-_-");
+			// Variables
+			char linea1[17];
+			char temp[5];
+			// Leo la temperatura y humedad del aire
+			dhsensor TyH = dht22Read();
+			//convierto float a char
+			dtostrf(TyH.temp, 4, 1, temp);
+			// Formateo las lineas del LCD
+			sprintf(linea1, "TEMP AIRE:  %s", temp);
+			menuDisplayHisto(air_temp);
+			// Imprimo
+			lcdPrint(0, 0, linea1);
 		}
 		break;
 		case MENU_ESTADO_HUMIDITY: {
@@ -531,9 +546,6 @@ void menuInactivo() {
 
 void menuUpdate() {
 	// Variables
-	unsigned long last_button_push 	= 0;
-	unsigned long last_menu_update	= 0;
-	bool					power_save 				= FALSE;
 
 	// Leo boton
 	button = lcdReadButtons();
@@ -575,6 +587,26 @@ void menuUpdate() {
 			digitalWrite(BACKLIT, HIGH);
 			lcdOn(TRUE);
 			power_save = FALSE;
+		}
+	}
+}
+
+// Histograma
+void menuDisplayHisto(float data[18]) {
+	int i;
+	volatile int histo;
+	volatile float max = data[17];
+	volatile float min = data[16];
+	volatile float delta = max - min;
+	volatile float val;
+	volatile float coef;
+	// Itero sobre el historico
+	for (i = 0; i < 15; i++) {
+		if (data[i] !=-1000) {
+			 val = data[i] - min;
+			 coef = val / delta;
+			 histo = (int)roundf(7*coef);
+			 lcdWriteChar(i, 1, histo);
 		}
 	}
 }

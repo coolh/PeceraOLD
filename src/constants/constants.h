@@ -3,6 +3,10 @@
 
 #include <arduino.h>
 
+// Historico de sensores
+extern float air_temp[18];
+extern float hum[18];
+
 // Version
 #define VERSION   "0.0.1"
 
@@ -38,9 +42,10 @@
 #define KEYPAD_INPUT   0
 
 // Comm sensor de temperatura
-#define DHTPIN  3
+#define DHTPIN  2
+#define DHTTYPE DHT22
 
-// Tiempo de inactividad 60s (milisec)
+// Tiempo de inactividad 120s (milisec)
 #define INAC_TIMEOUT  120000
 
 // Tiempo de apagado del display 10m (milisec)

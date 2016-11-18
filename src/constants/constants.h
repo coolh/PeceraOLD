@@ -42,7 +42,7 @@ extern float hum[18];
 #define KEYPAD_INPUT   0
 
 // Comm sensor de temperatura
-#define DHTPIN  2
+#define DHTPIN  47
 #define DHTTYPE DHT22
 
 // Tiempo de inactividad 120s (milisec)

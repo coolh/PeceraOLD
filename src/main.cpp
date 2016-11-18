@@ -10,39 +10,23 @@
 void setup() {
 	digitalWrite(LED_BUILTIN, LOW);
 	// Inicializo LCD
-	//lcdInit();
+	lcdInit();
 	// Inicializo I2C
-	//wireInit();
+	wireInit();
 	// Inicializo Serial
 	Serial.begin(9600);
 	// Inicializo DHT22
-	//dhtInit();
+	dhtInit();
 	// Muestro bienvenida
-	//menuWelcome();
+	menuWelcome();
 	// Muestro menu inactivo
-	//menuInactivo();
-
-	delay(5000);
+	menuInactivo();
 }
 
 // Main loop
 void loop() {
-	pinMode(47, OUTPUT);
-	delay(3000);
-	digitalWrite(47, HIGH);
-	digitalWrite(LED_BUILTIN, HIGH);
-	digitalWrite(47, LOW);
-	delay(15);
-	pinMode(47, INPUT_PULLUP);
-	delay(3000);
-	digitalWrite(LED_BUILTIN, LOW);
-	delay(500);
-	//dhsensor dhsensor;
-	//dht22Read();
-	//delay(2000);
-	//Serial.println(millis());
 	// Guardo historico de sensores
-	//sensorStore();
+	sensorStore();
 	// Proceso Menu
-	// menuUpdate();
+	menuUpdate();
 }

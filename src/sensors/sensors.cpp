@@ -28,8 +28,6 @@ struct dhsensor dht22Read() {
     dhsensor.temp = event.temperature;
     dht.humidity().getEvent(&event);
     dhsensor.hum = event.relative_humidity;
-    Serial.print  ("Temperature:   "); Serial.print(dhsensor.temp); Serial.println(" *C");
-    Serial.print  ("Humidity:   "); Serial.print(dhsensor.hum); Serial.println(" *C");
     last_sensor_read = millis();
   }
   return dhsensor;
@@ -57,13 +55,13 @@ void sensorStore() {
     }
     // Escribo ultimos valores
     // Leo el DHT22
-    Serial.println("Voy a leer");
-    //air_temp[15] = dht.readTemperature();
-    //hum[15] = dht.readHumidity();
+    sensors_event_t event;
+    dht.temperature().getEvent(&event);
+    air_temp[15] = event.temperature;
+    dht.humidity().getEvent(&event);
+    hum[15] = event.relative_humidity;
     last_sensor_read = millis();
     last_sensor_store = millis();
-    Serial.println(air_temp[15]);
-    Serial.println(hum[15]);
     // Busco MAX y MIN
     for (i = 0; i < 16; i++) {
       if (air_temp[i] != -1000) {

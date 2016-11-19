@@ -13,6 +13,8 @@ void setup() {
 	lcdInit();
 	// Inicializo I2C
 	wireInit();
+	// Inicializo ds18B20
+	dsInit();
 	// Inicializo Serial
 	Serial.begin(9600);
 	// Inicializo DHT22

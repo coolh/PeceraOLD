@@ -2,13 +2,21 @@
 #include <DHT.h>
 #include <DHT_U.h>
 #include <stdio.h>
+#include <OneWire.h>
+#include <DallasTemperature.h>
 
 #include "constants/constants.h"
 #include "sensors.h"
 
-// Variables Globales
+// Inicializo onewire
+OneWire ds(ONEWIREPIN);
+DallasTemperature sensors(&ds);
+
+// Inicializo DHT22
 DHT_Unified dht(DHTPIN, DHTTYPE);
 dhsensor dhsensor;
+
+// Variables Globales
 unsigned long last_sensor_read = 0;
 unsigned long last_sensor_store = 0;
 float air_temp[18]  = { -1000, -1000, -1000, -1000, -1000, -1000, -1000, -1000, -1000, -1000, -1000, -1000, -1000, -1000, -1000, -1000, -1000, -1000 };
@@ -17,6 +25,11 @@ float hum[18]	  		= { -1000, -1000, -1000, -1000, -1000, -1000, -1000, -1000, -1
 // Inicializo DHT22
 void dhtInit() {
   dht.begin();
+}
+
+// Inicializo ds18B20
+void dsInit() {
+  sensors.begin();
 }
 
 // Leo temperatura
@@ -79,5 +92,13 @@ void sensorStore() {
     air_temp[17] = aTMax;
     hum[16] = hMin;
     hum[17] = hMax;
+    readWaterTemp();
   }
+}
+
+// Leo sensor de temperatura del agua
+float readWaterTemp() {
+  sensors.requestTemperatures();
+  float wtemp = sensors.getTempCByIndex(0);
+  return wtemp;
 }

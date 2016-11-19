@@ -78,7 +78,16 @@ void menuMain() {
 		}
 		break;
 		case MENU_ESTADO_TEMP1: {
-			lcdPrint(0, 0, "TEMP AGUA:   27C");
+			// Variables
+			float wtemp;
+			char temp[5];
+			char linea1[17];
+			// Leo sensot temperatura del agua
+			wtemp = readWaterTemp();
+			dtostrf(wtemp, 4, 1, temp);
+			// Formateo linea LCD
+			sprintf(linea1, "TEMP AGUA: %sC", temp);
+			lcdPrint(0, 0, linea1);
 			lcdPrint(0, 1, "                ");
 		}
 		break;
@@ -91,15 +100,27 @@ void menuMain() {
 			//convierto float a char
 			dtostrf(TyH.temp, 4, 1, temp);
 			// Formateo las lineas del LCD
-			sprintf(linea1, "TEMP AIRE:  %s", temp);
-			menuDisplayHisto(air_temp);
-			// Imprimo
+			sprintf(linea1, "TEMP AIRE: %sC", temp);
 			lcdPrint(0, 0, linea1);
+			lcdPrint(0, 1, "                ");
+			// Imprimo historico
+			menuDisplayHisto(air_temp);
 		}
 		break;
 		case MENU_ESTADO_HUMIDITY: {
-			lcdPrint(0, 0, "HUMEDAD:     94%");
-			lcdPrint(0, 1, "-._.-_-_--.-_._-");
+			// Variables
+			char linea1[17];
+			char temp[4];
+			// Leo la temperatura y humedad del aire
+			dhsensor TyH = dht22Read();
+			//convierto float a char
+			dtostrf(TyH.hum, 3, 0, temp);
+			// Formateo las lineas del LCD
+			sprintf(linea1, "HUMEDAD:    %s%%", temp);
+			lcdPrint(0, 0, linea1);
+			lcdPrint(0, 1, "                ");
+			// Imprimo historico
+			menuDisplayHisto(hum);
 		}
 		break;
 		case MENU_ESTADO_FANS: {
@@ -527,17 +548,21 @@ void menuInactivo() {
 	char linea2[17];
 	char temp[5];
 	char hum[4];
+	char wtemp[5];
+	float water;
 
 	// Leo la hora
 	date datevar = rtcRead();
-
+	// Leo sensot temperatura del agua
+	water = readWaterTemp();
+	dtostrf(water, 4, 1, wtemp);
 	// Leo la temperatura y humedad del aire
 	dhsensor TyH = dht22Read();
 	//convierto float a char
 	dtostrf(TyH.temp, 4, 1, temp);
 	dtostrf(TyH.hum, 3, 0, hum);
 	// Formateo las lineas del LCD
-	sprintf(linea1, "W:28.2C    %02d:%02d", datevar.hour, datevar.minute);
+	sprintf(linea1, "W:%sC    %02d:%02d",wtemp , datevar.hour, datevar.minute);
 	sprintf(linea2, "T:%3sC  Hr:%s%%", temp, hum);
 
 	lcdPrint(0, 0, linea1);
@@ -594,12 +619,12 @@ void menuUpdate() {
 // Histograma
 void menuDisplayHisto(float data[18]) {
 	int i;
-	volatile int histo;
-	volatile float max = data[17];
-	volatile float min = data[16];
-	volatile float delta = max - min;
-	volatile float val;
-	volatile float coef;
+	int histo;
+	float max = data[17];
+	float min = data[16];
+	float delta = max - min;
+	float val;
+	float coef;
 	// Itero sobre el historico
 	for (i = 0; i < 15; i++) {
 		if (data[i] !=-1000) {

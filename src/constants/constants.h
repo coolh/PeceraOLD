@@ -45,6 +45,9 @@ extern float hum[18];
 #define DHTPIN  47
 #define DHTTYPE DHT22
 
+// Temperatura del AGUA
+#define ONEWIREPIN 48
+
 // Tiempo de inactividad 120s (milisec)
 #define INAC_TIMEOUT  120000
 

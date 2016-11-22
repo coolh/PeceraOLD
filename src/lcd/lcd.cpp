@@ -2,10 +2,10 @@
 #include "constants/constants.h"
 #include "lcd.h"
 
-// Global Variables
 // Inicializo variable para LCD
 LiquidCrystal lcd(RS, ENABLE, D4, D5, D6, D7);
 
+// Inicializo LCD
 void lcdInit() {
   // Defino chars para historial
   byte chars[8][8] = {

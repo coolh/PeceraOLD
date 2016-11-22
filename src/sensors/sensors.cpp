@@ -20,34 +20,38 @@ float air_temp[19]    = { -1000, -1000, -1000, -1000, -1000, -1000, -1000, -1000
 float humidity[19]	  = { -1000, -1000, -1000, -1000, -1000, -1000, -1000, -1000, -1000, -1000, -1000, -1000, -1000, -1000, -1000, -1000, -1000, -1000, 0 };
 float water_temp[19]	= { -1000, -1000, -1000, -1000, -1000, -1000, -1000, -1000, -1000, -1000, -1000, -1000, -1000, -1000, -1000, -1000, -1000, -1000, 0 };
 
-// Inicializo DHT22
+/*******************************************************************************
+ * Inicializo DHT22
+ ******************************************************************************/
 void dhtInit() {
   dht.begin();
 }
 
-// Inicializo ds18B20
+/*******************************************************************************
+ * Inicializo ds18B20
+ ******************************************************************************/
 void dsInit() {
   sensors.begin();
 }
 
-// Leo temperatura
-void dht22Read() {
+/*******************************************************************************
+ * Leo sensores
+ ******************************************************************************/
+void sensorsRead() {
   // Print temp and hum
   sensors_event_t event;
   dht.temperature().getEvent(&event);
   air_temp[18] = event.temperature;
   dht.humidity().getEvent(&event);
   humidity[18] = event.relative_humidity;
-}
-
-// Leo sensor de temperatura del agua
-void readWaterTemp() {
   sensors.requestTemperatures();
   water_temp[18] = sensors.getTempCByIndex(0);
 }
 
-// Historico de sensores
-void sensorStore() {
+/*******************************************************************************
+ * Historico de sensores
+ ******************************************************************************/
+void sensorsStore() {
   // Variables
   volatile int i;
   float aTMax = -1000;

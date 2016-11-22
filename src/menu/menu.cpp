@@ -19,8 +19,7 @@ bool						force_update			= FALSE;
 void menuWelcome() {
 	lcdPrint(0, 0, "CONTROL PECERA");
 	lcdPrint(0, 1, "VERSION: " VERSION );
-	delay(1000);
-	//lcdClear();
+	Alarm.delay(1000);
 }
 
 
@@ -200,7 +199,7 @@ void menuMain() {
 					// Leo botones
 					button = lcdReadButtons();
 					// Espero 200ms
-					delay(200);
+					Alarm.delay(300);
 					// Configuro variables de fecha
 					switch (option) {
 						// Hour
@@ -569,7 +568,7 @@ void menuUpdate() {
 
 	// Delay para evitar repetir teclas
 	if (button != BTN_NONE) {
-		delay(300);
+		Alarm.delay(300);
 		last_button_push = millis();
 		// Prendo el display
 		if(power_save == TRUE) {

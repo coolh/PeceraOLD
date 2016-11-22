@@ -2,24 +2,26 @@
 #define CONSTANTS_H
 
 #include <arduino.h>
+#include <TimeLib.h>
+#include <TimeAlarms.h>
 
-// Historico de sensores
+/* Historico de sensores */
 extern float air_temp[19];
 extern float humidity[19];
 extern float water_temp[19];
 
-// Version
+/* Version */
 #define VERSION   "0.0.1"
 
-// bool
+/* bool */
 #define TRUE 1
 #define FALSE 0
 
-// LCD Type
+/* LCD Type */
 #define LCD_COLS	16
 #define LCD_ROWS	2
 
-// Botones LCD
+/* Botones LCD */
 #define	BTN_RIGHT	  0
 #define BTN_UP		  1
 #define BTN_DOWN 	  2
@@ -27,10 +29,7 @@ extern float water_temp[19];
 #define BTN_SELECT 	4
 #define BTN_NONE   	5
 
-/////////////////////
-//Definicion de pines
-/////////////////////
-// Control LCD
+/* Control LCD */
 #define RS			8
 #define	ENABLE	9
 #define D4			4
@@ -39,32 +38,30 @@ extern float water_temp[19];
 #define D7			7
 #define BACKLIT 10
 
-// Input de botones LCD
+/* Input de botones LCD */
 #define KEYPAD_INPUT   0
 
-// Comm sensor de temperatura
+/* Comm sensor de temperatura */
 #define DHTPIN  47
 #define DHTTYPE DHT22
 
-// Temperatura del AGUA
+/* Temperatura del AGUA */
 #define ONEWIREPIN 46
 
-// Tiempo de inactividad 120s (milisec)
+/* Tiempo de inactividad 120s (milisec) */
 #define INAC_TIMEOUT  120000
 
-// Tiempo de apagado del display 10m (milisec)
+/* Tiempo de apagado del display 10m (milisec) */
 #define POWERSAVE_TIMEOUT 600000
 
-// Intervalo de guardodo de datos historicos (segundos)
+/* Intervalo de guardodo de datos historicos (segundos) */
 #define STORE_DELAY 10
-// Intervalo de lectura del DHT22 (segundos)
-#define AIR_READ_DELAY 5
-// Intervalo de lectura del agua (segundos)
-#define WATER_READ_DELAY 5
+/* Intervalo de lectura de sensores */
+#define SENSORS_READ_DELAY 5
 
-// Estado del menu LCD
+/* Estado del menu LCD */
 #define MENU_INACTIVO         0
-// Menu estado
+/* Menu estado */
 #define MENU_ESTADO           10
 #define MENU_ESTADO_LEDS      11
 #define MENU_ESTADO_TEMP1     12
@@ -74,7 +71,7 @@ extern float water_temp[19];
 #define MENU_ESTADO_DATETIME  16
 #define MENU_ESTADO_MICRO     17
 #define MENU_ESTADO_EXIT      18
-// Menu Config
+/* Menu Config */
 #define MENU_CONFIG             20
 #define MENU_CONFIG_LIGHTS      21
 #define MENU_CONFIG_TIMERS      22
@@ -93,5 +90,8 @@ extern float water_temp[19];
 #define numberOfMinutes(_time_) ((_time_ / SECS_PER_MIN) % SECS_PER_MIN)
 #define numberOfHours(_time_) (( _time_% SECS_PER_DAY) / SECS_PER_HOUR)
 #define elapsedDays(_time_) ( _time_ / SECS_PER_DAY)
+
+/* RTC Sync delay */
+#define RTC_SYNC_DELAY 3600
 
 #endif

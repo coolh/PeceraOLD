@@ -8,12 +8,9 @@ void dhtInit();
 void dsInit();
 
 // Leo temperatura
-void dht22Read();
+void sensorsRead();
 
 // Historico de sensores
-void sensorStore();
-
-// Leo sensor de temperatura del agua
-void readWaterTemp();
+void sensorsStore();
 
 #endif

@@ -36,4 +36,9 @@ void rtcWrite(date datevar);
  */
 struct date rtcRead();
 
+/**
+ * Sincronizo RTC con hora del micro
+ */
+void rtcSync();
+
 #endif

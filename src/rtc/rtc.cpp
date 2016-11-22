@@ -1,9 +1,11 @@
 #include <Wire.h>
+
+#include "constants/constants.h"
 #include "rtc.h"
 
-/**
+/*******************************************************************************
 * Esta funcion inicializa las comunicaciones I2C con el shield de RTC
-*/
+*******************************************************************************/
 void wireInit() {
   // Inicializo I2C
   Wire.begin();
@@ -30,13 +32,13 @@ void rtcWrite(date datevar) {
   Wire.write(bin2bcd(datevar.year));
   // Terminamos la escritura y verificamos si el DS1307 respondio
   // Si la escritura se llevo a cabo el metodo endTransmission retorna 0
-  Wire.endTransmission();    
+  Wire.endTransmission();
 }
 
-/**
+/*******************************************************************************
  * Esta funcion establece la cominicación con el DS1307 y lee los registros
  * de fecha y hora.
- */
+ ******************************************************************************/
 
 struct date rtcRead()
 {
@@ -59,7 +61,7 @@ struct date rtcRead()
 
   // Recibimos el byte del registro 0x00 y lo convertimos a binario
   datevar.second = bcd2bin(Wire.read());
-  datevar.minute = bcd2bin(Wire.read()); // Continuamos recibiendo cada uno de los registros
+  datevar.minute = bcd2bin(Wire.read());
   datevar.hour = bcd2bin(Wire.read());
   datevar.wday = bcd2bin(Wire.read());
   datevar.day = bcd2bin(Wire.read());
@@ -82,4 +84,17 @@ unsigned int bin2bcd(unsigned int bin) {
 unsigned int bcd2bin(unsigned int bcd) {
   // Convertir decenas y luego unidades a un numero binario
   return (bcd / 16 * 10) + (bcd % 16);
+}
+
+/*******************************************************************************
+ * Sincronizo RTC con hora del micro
+ *******************************************************************************/
+void rtcSync() {
+  date current_date = rtcRead();
+  setTime(current_date.hour,
+          current_date.minute,
+          current_date.wday,
+          current_date.month,
+          current_date.day,
+          current_date.year);
 }

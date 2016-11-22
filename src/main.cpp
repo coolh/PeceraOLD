@@ -1,6 +1,3 @@
-#include <TimeLib.h>
-#include <TimeAlarms.h>
-
 #include "constants/constants.h"
 #include "lcd/lcd.h"
 #include "menu/menu.h"
@@ -32,9 +29,9 @@ void setup() {
 	setTime(current_date.hour, current_date.minute,	current_date.wday, current_date.month, current_date.day, current_date.year);
 
 	// Tareas programadas
-	Alarm.timerRepeat(WATER_READ_DELAY, readWaterTemp);
-	Alarm.timerRepeat(AIR_READ_DELAY, dht22Read);
-	Alarm.timerRepeat(STORE_DELAY, sensorStore);
+	Alarm.timerRepeat(SENSORS_READ_DELAY, sensorsRead);
+	Alarm.timerRepeat(STORE_DELAY, sensorsStore);
+	Alarm.timerRepeat(RTC_SYNC_DELAY, rtcSync);
 }
 
 // Main loop

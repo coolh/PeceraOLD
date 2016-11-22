@@ -14,13 +14,11 @@ DallasTemperature sensors(&ds);
 
 // Inicializo DHT22
 DHT_Unified dht(DHTPIN, DHTTYPE);
-dhsensor dhsensor;
 
 // Variables Globales
-unsigned long last_sensor_read = 0;
-unsigned long last_sensor_store = 0;
-float air_temp[18]  = { -1000, -1000, -1000, -1000, -1000, -1000, -1000, -1000, -1000, -1000, -1000, -1000, -1000, -1000, -1000, -1000, -1000, -1000 };
-float hum[18]	  		= { -1000, -1000, -1000, -1000, -1000, -1000, -1000, -1000, -1000, -1000, -1000, -1000, -1000, -1000, -1000, -1000, -1000, -1000 };
+float air_temp[19]    = { -1000, -1000, -1000, -1000, -1000, -1000, -1000, -1000, -1000, -1000, -1000, -1000, -1000, -1000, -1000, -1000, -1000, -1000, 0 };
+float humidity[19]	  = { -1000, -1000, -1000, -1000, -1000, -1000, -1000, -1000, -1000, -1000, -1000, -1000, -1000, -1000, -1000, -1000, -1000, -1000, 0 };
+float water_temp[19]	= { -1000, -1000, -1000, -1000, -1000, -1000, -1000, -1000, -1000, -1000, -1000, -1000, -1000, -1000, -1000, -1000, -1000, -1000, 0 };
 
 // Inicializo DHT22
 void dhtInit() {
@@ -33,72 +31,66 @@ void dsInit() {
 }
 
 // Leo temperatura
-struct dhsensor dht22Read() {
-  if (millis() - last_sensor_read > 5000) {
-    // Print temp and hum
-    sensors_event_t event;
-    dht.temperature().getEvent(&event);
-    dhsensor.temp = event.temperature;
-    dht.humidity().getEvent(&event);
-    dhsensor.hum = event.relative_humidity;
-    last_sensor_read = millis();
-  }
-  return dhsensor;
+void dht22Read() {
+  // Print temp and hum
+  sensors_event_t event;
+  dht.temperature().getEvent(&event);
+  air_temp[18] = event.temperature;
+  dht.humidity().getEvent(&event);
+  humidity[18] = event.relative_humidity;
+}
+
+// Leo sensor de temperatura del agua
+void readWaterTemp() {
+  sensors.requestTemperatures();
+  water_temp[18] = sensors.getTempCByIndex(0);
 }
 
 // Historico de sensores
 void sensorStore() {
   // Variables
-  int i;
+  volatile int i;
   float aTMax = -1000;
   float aTMin = 1000;
   float hMax = -1000;
   float hMin = 1000;
+  float wMax = -1000;
+  float wMin = 1000;
 
-  // Ejecuto cada STORE_DELAY milis del ultimo store
-  if (millis() - last_sensor_store > STORE_DELAY) {
-    // Si el DHT22 fue escaneado en los ultimos 5 segundos espero
-    while (millis() - last_sensor_read < 5000) {
-      delay(1000);
-    }
-    // Muevo valores viejos una posicion atras
-    for (i = 1; i < 16; i++) {
-      air_temp[i-1] = air_temp[i];
-      hum[i-1] = hum[i];
-    }
-    // Escribo ultimos valores
-    // Leo el DHT22
-    sensors_event_t event;
-    dht.temperature().getEvent(&event);
-    air_temp[15] = event.temperature;
-    dht.humidity().getEvent(&event);
-    hum[15] = event.relative_humidity;
-    last_sensor_read = millis();
-    last_sensor_store = millis();
-    // Busco MAX y MIN
-    for (i = 0; i < 16; i++) {
-      if (air_temp[i] != -1000) {
-        if (air_temp[i] > aTMax)
-          aTMax = air_temp[i];
-        if (air_temp[i] < aTMin)
-          aTMin = air_temp[i];
-        if (hum[i] > hMax)
-          hMax = hum[i];
-        if (air_temp[i] < hMin)
-          hMin = hum[i];
-      }
-    }
-    air_temp[16] = aTMin;
-    air_temp[17] = aTMax;
-    hum[16] = hMin;
-    hum[17] = hMax;
-    readWaterTemp();
+  // Escribo ultimos valores
+  air_temp[15] = air_temp[18];
+  humidity[15] = humidity[18];
+  water_temp[15] = water_temp[18];
+
+  // Muevo valores viejos una posicion atras
+  for (i = 1; i < 16; i++) {
+    air_temp[i-1] = air_temp[i];
+    humidity[i-1] = humidity[i];
+    water_temp[i-1] = water_temp[i];
   }
-}
 
-// Leo sensor de temperatura del agua
-float readWaterTemp() {
-  sensors.requestTemperatures();
-  float wtemp = sensors.getTempCByIndex(0);
-  return wtemp;
+  // Busco MAX y MIN
+  for (i = 0; i < 16; i++) {
+    if (air_temp[i] != -1000) {
+      if (air_temp[i] > aTMax)
+        aTMax = air_temp[i];
+      if (air_temp[i] < aTMin)
+        aTMin = air_temp[i];
+      if (humidity[i] > hMax)
+        hMax = humidity[i];
+      if (humidity[i] < hMin)
+        hMin = humidity[i];
+      if (water_temp[i] > wMax)
+        wMax = water_temp[i];
+      if (water_temp[i] < wMin)
+        wMin = water_temp[i];
+    }
+  }
+  // Escribo Maximo y minimo
+  air_temp[16] = aTMin;
+  air_temp[17] = aTMax;
+  humidity[16] = hMin;
+  humidity[17] = hMax;
+  water_temp[16] = wMin;
+  water_temp[17] = wMax;
 }

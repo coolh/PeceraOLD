@@ -58,9 +58,6 @@ void menuMain() {
 		return;
 	}
 
-	// Limpio Pantalla
-	//lcdClear();
-
 	// Ejecuto menues
 	switch (menu_option) {
 		case MENU_INACTIVO: {
@@ -79,28 +76,28 @@ void menuMain() {
 		break;
 		case MENU_ESTADO_TEMP1: {
 			// Variables
-			float wtemp;
-			char temp[5];
 			char linea1[17];
-			// Leo sensot temperatura del agua
-			wtemp = readWaterTemp();
-			dtostrf(wtemp, 4, 1, temp);
+			char twtemp[5];
+
+			//convierto float a char
+			dtostrf(water_temp[18], 4, 1, twtemp);
 			// Formateo linea LCD
-			sprintf(linea1, "TEMP AGUA: %sC", temp);
+			sprintf(linea1, "TEMP AGUA: %sC", twtemp);
 			lcdPrint(0, 0, linea1);
 			lcdPrint(0, 1, "                ");
+			// Imprimo historico
+			menuDisplayHisto(water_temp);
 		}
 		break;
 		case MENU_ESTADO_TEMP2: {
 			// Variables
 			char linea1[17];
-			char temp[5];
-			// Leo la temperatura y humedad del aire
-			dhsensor TyH = dht22Read();
+			char tatemp[5];
+
 			//convierto float a char
-			dtostrf(TyH.temp, 4, 1, temp);
+			dtostrf(air_temp[18], 4, 1, tatemp);
 			// Formateo las lineas del LCD
-			sprintf(linea1, "TEMP AIRE: %sC", temp);
+			sprintf(linea1, "TEMP AIRE: %sC", tatemp);
 			lcdPrint(0, 0, linea1);
 			lcdPrint(0, 1, "                ");
 			// Imprimo historico
@@ -110,17 +107,16 @@ void menuMain() {
 		case MENU_ESTADO_HUMIDITY: {
 			// Variables
 			char linea1[17];
-			char temp[4];
-			// Leo la temperatura y humedad del aire
-			dhsensor TyH = dht22Read();
+			char thumidity[4];
+
 			//convierto float a char
-			dtostrf(TyH.hum, 3, 0, temp);
+			dtostrf(humidity[18], 3, 0, thumidity);
 			// Formateo las lineas del LCD
-			sprintf(linea1, "HUMEDAD:    %s%%", temp);
+			sprintf(linea1, "HUMEDAD:    %s%%", thumidity);
 			lcdPrint(0, 0, linea1);
 			lcdPrint(0, 1, "                ");
 			// Imprimo historico
-			menuDisplayHisto(hum);
+			menuDisplayHisto(humidity);
 		}
 		break;
 		case MENU_ESTADO_FANS: {
@@ -546,24 +542,20 @@ void menuInactivo() {
 	// Variables
 	char linea1[17];
 	char linea2[17];
-	char temp[5];
-	char hum[4];
-	char wtemp[5];
-	float water;
+	char tatemp[5];
+	char thumidity[4];
+	char twtemp[5];
 
 	// Leo la hora
 	date datevar = rtcRead();
-	// Leo sensot temperatura del agua
-	water = readWaterTemp();
-	dtostrf(water, 4, 1, wtemp);
-	// Leo la temperatura y humedad del aire
-	dhsensor TyH = dht22Read();
+
 	//convierto float a char
-	dtostrf(TyH.temp, 4, 1, temp);
-	dtostrf(TyH.hum, 3, 0, hum);
+	dtostrf(air_temp[18], 4, 1, tatemp);
+	dtostrf(humidity[18], 3, 0, thumidity);
+	dtostrf(water_temp[18], 4, 1, twtemp);
 	// Formateo las lineas del LCD
-	sprintf(linea1, "W:%sC    %02d:%02d",wtemp , datevar.hour, datevar.minute);
-	sprintf(linea2, "T:%3sC  Hr:%s%%", temp, hum);
+	sprintf(linea1, "W:%sC    %02d:%02d",twtemp , datevar.hour, datevar.minute);
+	sprintf(linea2, "T:%3sC  Hr:%s%%", tatemp, thumidity);
 
 	lcdPrint(0, 0, linea1);
 	lcdPrint(0, 1, linea2);
@@ -578,6 +570,13 @@ void menuUpdate() {
 	// Delay para evitar repetir teclas
 	if (button != BTN_NONE) {
 		delay(300);
+		last_button_push = millis();
+		// Prendo el display
+		if(power_save == TRUE) {
+			digitalWrite(BACKLIT, HIGH);
+			lcdOn(TRUE);
+			power_save = FALSE;
+		}
 	}
 
 	// Detecto Inactividad
@@ -603,21 +602,10 @@ void menuUpdate() {
 		force_update = FALSE;
 		menuMain();
 	}
-
-	// Seteo estado pulsacion
-	if (button != BTN_NONE) {
-		last_button_push = millis();
-		// Prendo el display
-		if(power_save == TRUE) {
-			digitalWrite(BACKLIT, HIGH);
-			lcdOn(TRUE);
-			power_save = FALSE;
-		}
-	}
 }
 
 // Histograma
-void menuDisplayHisto(float data[18]) {
+void menuDisplayHisto(float data[19]) {
 	int i;
 	int histo;
 	float max = data[17];

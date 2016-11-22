@@ -4,8 +4,9 @@
 #include <arduino.h>
 
 // Historico de sensores
-extern float air_temp[18];
-extern float hum[18];
+extern float air_temp[19];
+extern float humidity[19];
+extern float water_temp[19];
 
 // Version
 #define VERSION   "0.0.1"
@@ -46,7 +47,7 @@ extern float hum[18];
 #define DHTTYPE DHT22
 
 // Temperatura del AGUA
-#define ONEWIREPIN 48
+#define ONEWIREPIN 46
 
 // Tiempo de inactividad 120s (milisec)
 #define INAC_TIMEOUT  120000
@@ -54,8 +55,12 @@ extern float hum[18];
 // Tiempo de apagado del display 10m (milisec)
 #define POWERSAVE_TIMEOUT 600000
 
-// Intervalo de guardodo de datos historicos
-#define STORE_DELAY 10000
+// Intervalo de guardodo de datos historicos (segundos)
+#define STORE_DELAY 10
+// Intervalo de lectura del DHT22 (segundos)
+#define AIR_READ_DELAY 5
+// Intervalo de lectura del agua (segundos)
+#define WATER_READ_DELAY 5
 
 // Estado del menu LCD
 #define MENU_INACTIVO         0

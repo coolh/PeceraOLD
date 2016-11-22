@@ -13,10 +13,10 @@ void wireInit() {
  * Esta funcion establece la cominicación con el DS1307 y escribe los registros
  * de fecha y hora.
  */
-bool rtcWrite(date datevar) {
+void rtcWrite(date datevar) {
   // Iniciar el intercambio de información con el DS1307 (0x68)
   Wire.beginTransmission(0x68);
-  
+
   // Escribir la dirección del registro segundero
   Wire.write(0x00);
   // Escribir valores en los registros, nos aseguramos que el bit clock halt
@@ -30,8 +30,7 @@ bool rtcWrite(date datevar) {
   Wire.write(bin2bcd(datevar.year));
   // Terminamos la escritura y verificamos si el DS1307 respondio
   // Si la escritura se llevo a cabo el metodo endTransmission retorna 0
-  if (Wire.endTransmission() != 0)
-    return false;
+  Wire.endTransmission();    
 }
 
 /**
@@ -73,14 +72,14 @@ struct date rtcRead()
 /**
  * Convierte un numero binario a BCD
  */
-unsigned char bin2bcd(unsigned char bin) {
+unsigned int bin2bcd(unsigned int bin) {
   return (bin / 10 * 16) + (bin % 10);
 }
 
 /**
  * Convierte un numero BCD a binario
  */
-unsigned char bcd2bin(unsigned char bcd) {
+unsigned int bcd2bin(unsigned int bcd) {
   // Convertir decenas y luego unidades a un numero binario
   return (bcd / 16 * 10) + (bcd % 16);
 }

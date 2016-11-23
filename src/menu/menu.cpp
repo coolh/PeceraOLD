@@ -5,6 +5,7 @@
 #include "lcd/lcd.h"
 #include "rtc/rtc.h"
 #include "sensors/sensors.h"
+#include "luces/luces.h"
 
 // Variables Globales
 unsigned int		menu_option 			= 0;
@@ -69,8 +70,17 @@ void menuMain() {
 		}
 		break;
 		case MENU_ESTADO_LEDS: {
-			lcdPrint(0, 0, "BC:100%   R:100%");
-			lcdPrint(0, 1, "BF:100%   A: 10%");
+			// Variables
+			unsigned char state_luces[4];
+			char linea1[17];
+			char linea2[17];
+
+			// Busco estado de luces
+			stateLuces(state_luces);
+			sprintf(linea1, "WW:%03d%%   R:%03d%%", state_luces[0], state_luces[2]);
+			sprintf(linea2, "CW:%03d%%   B:%03d%%", state_luces[1], state_luces[3]);
+			lcdPrint(0, 0, linea1);
+			lcdPrint(0, 1, linea2);
 		}
 		break;
 		case MENU_ESTADO_TEMP1: {

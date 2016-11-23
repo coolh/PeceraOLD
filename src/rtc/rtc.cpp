@@ -3,6 +3,8 @@
 #include "constants/constants.h"
 #include "rtc.h"
 
+unsigned long last_sync;
+
 /*******************************************************************************
 * Esta funcion inicializa las comunicaciones I2C con el shield de RTC
 *******************************************************************************/
@@ -90,11 +92,14 @@ unsigned int bcd2bin(unsigned int bcd) {
  * Sincronizo RTC con hora del micro
  *******************************************************************************/
 void rtcSync() {
-  date current_date = rtcRead();
-  setTime(current_date.hour,
-          current_date.minute,
-          current_date.wday,
-          current_date.month,
-          current_date.day,
-          current_date.year);
+  if(millis() - last_sync > RTC_SYNC_DELAY) {
+    date current_date = rtcRead();
+    setTime(current_date.hour,
+            current_date.minute,
+            current_date.wday,
+            current_date.month,
+            current_date.day,
+            current_date.year);
+    last_sync = millis();
+  }
 }

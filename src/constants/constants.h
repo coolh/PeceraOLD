@@ -14,8 +14,10 @@ extern float water_temp[19];
 #define VERSION   "0.0.1"
 
 /* bool */
-#define TRUE 1
 #define FALSE 0
+#define TRUE 1
+/* tird state */
+#define AUTO 2
 
 /* LCD Type */
 #define LCD_COLS	16
@@ -49,15 +51,15 @@ extern float water_temp[19];
 #define ONEWIREPIN 46
 
 /* Tiempo de inactividad 120s (milisec) */
-#define INAC_TIMEOUT  120000
+#define INAC_TIMEOUT  120000UL
 
 /* Tiempo de apagado del display 10m (milisec) */
-#define POWERSAVE_TIMEOUT 600000
+#define POWERSAVE_TIMEOUT 600000UL
 
-/* Intervalo de guardodo de datos historicos (segundos) */
-#define STORE_DELAY 10
-/* Intervalo de lectura de sensores */
-#define SENSORS_READ_DELAY 5
+/* Intervalo de guardodo de datos historicos (milisegundos) */
+#define STORE_DELAY 1800000UL
+/* Intervalo de lectura de sensores (milisegundos) */
+#define SENSORS_READ_DELAY 5000UL
 
 /* Estado del menu LCD */
 #define MENU_INACTIVO         0
@@ -92,6 +94,15 @@ extern float water_temp[19];
 #define elapsedDays(_time_) ( _time_ / SECS_PER_DAY)
 
 /* RTC Sync delay */
-#define RTC_SYNC_DELAY 3600
+#define RTC_SYNC_DELAY 3600000UL
+
+/* Intervalo de dimming (segundos) */
+#define DIM_INTERVAL 60
+
+/* Salidas de control LEDs */
+#define WW_LED_PIN 45
+#define CW_LED_PIN 44
+#define R_LED_PIN 43
+#define B_LED_PIN 42
 
 #endif

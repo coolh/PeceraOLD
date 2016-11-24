@@ -24,6 +24,8 @@ void menuWelcome() {
 
 
 void menuMain() {
+	// Guardo menu anterior
+	unsigned int old_menu_option = menu_option;
 	// Manejo del menu
 	if (button == BTN_UP && menu_option % 10 == 0) {
 		if (menu_option > MENU_ESTADO && menu_option <= MENU_CONFIG) {
@@ -53,7 +55,7 @@ void menuMain() {
 	}
 	if (button == BTN_SELECT && (menu_option == MENU_ESTADO_EXIT || menu_option == MENU_CONFIG_EXIT)) {
 		menu_option = MENU_INACTIVO;
-		menuInactivo();
+		force_update = TRUE;
 		return;
 	}
 
@@ -235,7 +237,6 @@ void menuMain() {
 						break;
 						case BTN_SELECT: {
 							salir = TRUE;
-							force_update = TRUE;
 							// Guardo los cambios
 							set_luz_mode(mode);
 						}
@@ -306,8 +307,9 @@ void menuMain() {
 				while (salir == FALSE) {
 					// Leo botones
 					button = lcdReadButtons();
-					// Espero 200ms
-					Alarm.delay(300);
+						if (button != BTN_NONE)
+							// Espero 200ms si presiono tecla
+							Alarm.delay(200);
 					// Configuro variables de fecha
 					switch (option) {
 						// Hour
@@ -629,7 +631,6 @@ void menuMain() {
 					// Salgo al apretar SELECT
 					if (button == BTN_SELECT) {
 						salir = TRUE;
-						force_update = TRUE;
 						rtcWrite(datevar);
 						lcdCursor(FALSE);
 					}
@@ -643,6 +644,8 @@ void menuMain() {
 		}
 		break;
 	}
+	if (menu_option != old_menu_option)
+		force_update = TRUE;
 }
 
 void menuInactivo() {
@@ -676,7 +679,8 @@ void menuUpdate() {
 
 	// Delay para evitar repetir teclas
 	if (button != BTN_NONE) {
-		Alarm.delay(300);
+		// Espero 200ms si presiono tecla
+		Alarm.delay(200);
 		last_button_push = millis();
 		// Prendo el display
 		if(power_save == TRUE) {

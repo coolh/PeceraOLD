@@ -18,9 +18,12 @@ void off_luz_r();
 void on_luz_b();
 void off_luz_b();
 
+// Obtengo / Seteo override de luces
+void set_luz_mode(unsigned char* mode);
+void get_luz_mode(unsigned char* mode);
 
 // Devuelvo valores actuales de PWM de los leds
-void stateLuces(unsigned char state[]);
+void get_luz_state(unsigned char* state);
 
 // Rutina principal de manejo de luces
 void controlLuces();

@@ -15,7 +15,6 @@ unsigned long		last_menu_update	= 0;
 bool						power_save 				= FALSE;
 bool						force_update			= FALSE;
 
-
 // Muestro Bienvenida
 void menuWelcome() {
 	lcdPrint(0, 0, "CONTROL PECERA");
@@ -71,14 +70,14 @@ void menuMain() {
 		break;
 		case MENU_ESTADO_LEDS: {
 			// Variables
-			unsigned char state_luces[4];
 			char linea1[17];
 			char linea2[17];
+			unsigned char state[4];
 
 			// Busco estado de luces
-			stateLuces(state_luces);
-			sprintf(linea1, "WW:%03d%%   R:%03d%%", state_luces[0], state_luces[2]);
-			sprintf(linea2, "CW:%03d%%   B:%03d%%", state_luces[1], state_luces[3]);
+			get_luz_state(state);
+			sprintf(linea1, "WW:%03d%%   R:%03d%%", state[0], state[1]);
+			sprintf(linea2, "CW:%03d%%   B:%03d%%", state[2], state[3]);
 			lcdPrint(0, 0, linea1);
 			lcdPrint(0, 1, linea2);
 		}
@@ -166,8 +165,107 @@ void menuMain() {
 		}
 		break;
 		case MENU_CONFIG_LIGHTS: {
+			// Variables
+			bool salir = FALSE;
+			char linea1[17];
+			char linea2[17];
+			char tmp_state[4][6];
+			unsigned char option = 0;
+			unsigned char mode[4];
+			int i;
+
+			// Imprimo titulo
 			lcdPrint(0, 0, "   CONFIGURAR   ");
 			lcdPrint(0, 1, "< MANUAL LIGHT >");
+			if (button == BTN_SELECT) {
+				// Obtengo estado de luces
+				get_luz_mode(mode);
+				// Entro en el bucle de configuracion
+				while (salir == FALSE) {
+					// Retardo blink
+					Alarm.delay(200);
+					// Posiciono cursor
+					switch (option) {
+						case 0:
+							lcdPrint(3, 0, "     ");
+						break;
+						case 1:
+							lcdPrint(11, 0, "     ");
+						break;
+						case 2:
+							lcdPrint(3, 1, "     ");
+						break;
+						case 3:
+							lcdPrint(11, 1, "     ");
+						break;
+					}
+					// Leo botones
+					button = lcdReadButtons();
+					// Retardo blink
+					Alarm.delay(200);
+					// Configuro variables
+					switch (button) {
+						case BTN_UP: {
+							if (mode[option] < 3)
+								mode[option]++;
+							else
+								mode[option] = 0;
+						}
+						break;
+						case BTN_DOWN: {
+							if (mode[option] > 0)
+								mode[option]--;
+							else
+								mode[option] = 3;
+						}
+						break;
+						case BTN_RIGHT: {
+							if (option < 3)
+								option++;
+							else
+								option = 0;
+						}
+						break;
+						case BTN_LEFT: {
+							if (option > 0)
+								option--;
+							else
+								option = 3;
+						}
+						break;
+						case BTN_SELECT: {
+							salir = TRUE;
+							force_update = TRUE;
+							// Guardo los cambios
+							set_luz_mode(mode);
+						}
+						break;
+					}
+
+					// Convierto el estado numerico a string
+					for (i = 0; i < 4; i++) {
+						switch (mode[i]) {
+							case AUTO_ON:
+								strcpy(tmp_state[i], "A-ON ");
+							break;
+							case AUTO_OFF:
+								strcpy(tmp_state[i], "A-OFF");
+							break;
+							case MAN_ON:
+								strcpy(tmp_state[i], "M-ON ");
+							break;
+							case MAN_OFF:
+								strcpy(tmp_state[i], "M-OFF");
+							break;
+						}
+					}
+					// Imprimo menu
+					sprintf(linea1, "WW:%s R:%s", tmp_state[0], tmp_state[1]);
+					sprintf(linea2, "CW:%s B:%s", tmp_state[2], tmp_state[3]);
+					lcdPrint(0, 0, linea1);
+					lcdPrint(0, 1, linea2);
+				}
+			}
 		}
 		break;
 		case MENU_CONFIG_TIMERS: {
@@ -623,7 +721,7 @@ void menuDisplayHisto(float data[19]) {
 	float val;
 	float coef;
 	// Itero sobre el historico
-	for (i = 0; i < 15; i++) {
+	for (i = 0; i < 16; i++) {
 		if (data[i] !=-1000) {
 			 val = data[i] - min;
 			 coef = val / delta;

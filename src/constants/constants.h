@@ -16,8 +16,6 @@ extern float water_temp[19];
 /* bool */
 #define FALSE 0
 #define TRUE 1
-/* tird state */
-#define AUTO 2
 
 /* LCD Type */
 #define LCD_COLS	16
@@ -100,9 +98,15 @@ extern float water_temp[19];
 #define DIM_INTERVAL 60
 
 /* Salidas de control LEDs */
-#define WW_LED_PIN 45
-#define CW_LED_PIN 44
-#define R_LED_PIN 43
-#define B_LED_PIN 42
+#define WW_LED_PIN  45
+#define CW_LED_PIN  44
+#define R_LED_PIN   43
+#define B_LED_PIN   42
+
+/* light state */
+#define AUTO_OFF  0
+#define AUTO_ON   1
+#define MAN_OFF   2
+#define MAN_ON    3
 
 #endif
